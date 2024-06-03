@@ -5,9 +5,15 @@ import Sidebar from './Components/Sidebar_Section/Sidebar';
 import Body from './Components/Body_Section/Body';
 import SigninPage from './Pages/SigninPage';
 
+
+function getToken() {
+    const tokenString = localStorage.getItem('token');
+    const userToken = JSON.parse(tokenString);
+    return userToken
+  }
+
 const Dashboard = () => {
     const [activeItem, setActiveItem] = useState('home');
-
     return (
         <div className='container'>
             <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} />
@@ -17,12 +23,14 @@ const Dashboard = () => {
 };
 
 const App = () => {
+    const [token, setToken] = useState(getToken());
     return (
         <Router>
             <Routes>
-                <Route path="/signin" element={<SigninPage />} />
-                <Route path="/dashboard" element={<Dashboard />} />
-                <Route path="/" element={<Navigate to="/signin" />} />
+            {/* element={token?<Navigate to={`/${path_roles[token.role]}`}/>:<LoginPage set_token={setToken} />} */}
+                <Route path="/signin" element={token ? <Navigate to={`/dashboard`}/>:<SigninPage set_token={setToken} />} />
+                <Route path="/dashboard" element={token ? <Dashboard user_details={token}/>:<Navigate to={`/signin`}/>} />
+                <Route path="/" element={token ? <Navigate to={`/dashboard`}/>:<Navigate to={`/signin`}/>} />
             </Routes>
         </Router>
     );

@@ -9,7 +9,7 @@ export const ScreenMode = {
     SIGN_UP: "SIGN_UP"
 }
 
-const SigninPage = () => {
+const SigninPage = (props) => {
 
     const [left, setLeft] = useState(0)
 
@@ -52,7 +52,7 @@ const SigninPage = () => {
             <Grid item xs={12} md={4} sx={{ position: 'relative', padding: 3 }}>
                 {
                     currMode === ScreenMode.SIGN_IN ? (
-                        <SigninForm onSwitchMode={onSwitchMode} />
+                        <SigninForm onSwitchMode={onSwitchMode} set_token={props.set_token} />
                     ) : (
                         <SignupForm onSwitchMode={onSwitchMode} />
                     )

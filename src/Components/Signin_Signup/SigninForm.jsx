@@ -1,11 +1,82 @@
-import { Button, Stack, TextField, Typography, colors } from '@mui/material'
-import React from 'react'
+import { Button, Stack, TextField, Typography, colors, Alert } from '@mui/material'
+import Backdrop from '@mui/material/Backdrop';
+import CircularProgress from '@mui/material/CircularProgress';
+import React, {useState} from 'react'
 import { ScreenMode } from '../../Pages/SigninPage'
 import { useNavigate } from 'react-router-dom'
+import axios from 'axios';
 
-const SigninForm = ({ onSwitchMode }) => {
+let API_URL = 'https://backend.srv533347.hstgr.cloud/';
 
+const SigninForm = ({ onSwitchMode, set_token }) => {
+
+    const [accountEmail, setAccountEmail] = useState('')
+    const [accountPassword, setAccountPassword] = useState('')
+    const [open, setOpen] = React.useState(false)
+    const [alertMessage, setAlertMessage] = useState(null)
+    const [alertType, setAlertType] = useState('error')
+    
     const navigate = useNavigate();
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+
+    const validateForm = () => {
+
+        if (!accountEmail || !accountPassword) {
+            setAlertMessage("All fields are required");
+            return false;
+        }
+
+        if (!emailRegex.test(accountEmail)) {
+            setAlertMessage("Invalid email address");
+            return false;
+        }
+
+        if (!passwordRegex.test(accountPassword)) {
+            setAlertMessage("Invalid password");
+            return false;
+        }
+
+        return true;
+    };
+
+    const signInHandle = async () => {
+    
+        if (!validateForm()) {
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 2000);
+            return;
+        }
+
+        setOpen(true);
+        axios.post(API_URL + 'account_signin', {
+            email: accountEmail,
+            password:  accountPassword
+        }).then((response) => {
+            if(response.status===200){
+                setAlertType('success');
+                setAlertMessage('Successful Login');
+                setOpen(false);
+                setTimeout(() => {
+                    setAlertMessage(null);
+                    setAlertType('error');
+                    navigate('/dashboard');
+                }, 1500);
+                let data = Object.fromEntries(Object.entries(response.data).filter(([_, v]) => v != null));
+                localStorage.setItem('token', JSON.stringify(data));
+                set_token(data);
+            }
+        }).catch((error) => {
+            console.log("Error", error);
+            setAlertMessage(error.response.data);
+            setOpen(false); 
+            setTimeout(() => {
+                setAlertMessage(null);
+            }, 2200);
+        })
+    }
 
     return (
         <Stack
@@ -16,6 +87,27 @@ const SigninForm = ({ onSwitchMode }) => {
                 color: colors.grey[800]
             }}
         >
+            <Backdrop
+                sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+                open={open}
+            >
+                <CircularProgress color="inherit" />
+            </Backdrop>
+            {alertMessage && (
+                <div style={{
+                    position: 'absolute',
+                    top: '20px',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: '999',
+                    width: '90%', 
+                    maxWidth: '500px', 
+                    padding: '0 16px', 
+                    boxSizing: 'border-box' 
+                }}>
+                    <Alert severity={alertType}>{alertMessage}</Alert>
+                </div>
+            )}
             <Stack
                 spacing={5}
                 sx={{
@@ -40,14 +132,14 @@ const SigninForm = ({ onSwitchMode }) => {
                             <Typography color={colors.grey[800]}>
                                 Email
                             </Typography>
-                            <TextField />
+                            <TextField onChange={(e) => setAccountEmail(e.target.value)} />
                         </Stack>
 
                         <Stack spacing={1}>
                             <Typography color={colors.grey[800]}>
                                 Password
                             </Typography>
-                            <TextField type='password' />
+                            <TextField type='password' onChange={(e) => setAccountPassword(e.target.value)} />
                         </Stack>
                     </Stack>
 
@@ -60,7 +152,8 @@ const SigninForm = ({ onSwitchMode }) => {
                                 backgroundColor: colors.grey[600]
                             }
                         }}
-                        onClick={()=>navigate('/dashboard')}
+                        onClick={signInHandle}
+                        // onClick={()=>navigate('/dashboard')}
                     >
                         SignIn
                     </Button>
