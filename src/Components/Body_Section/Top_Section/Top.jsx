@@ -10,16 +10,21 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import img from '../../../Assets/Images/profile.png'
 import { useNavigate } from 'react-router-dom';
 
-const Top = () => {
+const Top = ({set_token, user_details}) => {
 
     const navigate = useNavigate()
-
+    const logoutAccount = () => {
+        localStorage.clear();
+        set_token(null);
+        navigate('/signin');
+    }
+    console.log(user_details)
     return (
         <div className='topSection'>
             <div className="headerSection flex">
                 <div className="title">
                     <h1>Welcome to Mas Tech Hub</h1>
-                    <p>Hello Admin, Welcome back!</p>
+                    <p>Hello {user_details.Name.split(" ")[0]}, Welcome back!</p>
                 </div>
 
                 {/* <div className="searchBar flex">
@@ -29,7 +34,7 @@ const Top = () => {
 
                 <div className="adminDiv flex">
                     <MdOutlineEmail className='icon' />
-                    <RiLogoutCircleLine className='icon' onClick={() => navigate('/signin')} />
+                    <RiLogoutCircleLine className='icon' onClick={logoutAccount} />
 
                     <div className="adminImage">
                         <img src={img} alt="Admin Image" />

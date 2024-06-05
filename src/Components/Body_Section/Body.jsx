@@ -7,10 +7,10 @@ import Vendor from '../Vendor_Section/Vendor';
 import Csvdata from '../CsvData_Section/Csvdata';
 import Profile from '../Profile_Section/Profile';
 
-const Body = ({ activeItem }) => {
+const Body = ({ activeItem, user_details, set_token }) => {
     return (
         <div className='mainContent'>
-            <Top />
+            <Top set_token={set_token} user_details={user_details} />
             {activeItem === 'home' && <Home />}
             {activeItem === 'truck' && <Truck />}
             {activeItem === 'vendor' && <Vendor />}
