@@ -65,6 +65,7 @@
 .topSection .headerSection .adminDiv .icon:hover {
   background: var(--paleGreen);
   transform: scale(1.1);
+  color: rgb(44, 187, 9);
 }
 .topSection .headerSection .adminDiv .adminImage {
   border: 3px solid var(--whiteColor);
@@ -72,6 +73,7 @@
   width: 2.5rem;
   overflow: hidden;
   box-shadow: 0 2px 4px var(--inputColor);
+  cursor: pointer;
 }
 .topSection .headerSection .adminDiv .adminImage img {
   width: 100%;

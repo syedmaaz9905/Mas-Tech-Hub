@@ -16,7 +16,7 @@ const Dashboard = ({user_details, set_token }) => {
     const [activeItem, setActiveItem] = useState('home');
     return (
         <div className='container'>
-            <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} user_details={user_details} />
+            <Sidebar activeItem={activeItem} setActiveItem={setActiveItem} user_details={user_details} set_token={set_token} />
             <Body activeItem={activeItem} user_details={user_details} set_token={set_token}/>
         </div>
     );

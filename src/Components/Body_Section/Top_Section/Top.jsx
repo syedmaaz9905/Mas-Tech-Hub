@@ -10,7 +10,10 @@ import { RiLogoutCircleLine } from "react-icons/ri";
 import img from '../../../Assets/Images/profile.png'
 import { useNavigate } from 'react-router-dom';
 
-const Top = ({set_token, user_details}) => {
+// Imported Material-UI components
+import Tooltip from '@mui/material/Tooltip';
+
+const Top = ({ set_token, user_details }) => {
 
     const navigate = useNavigate()
     const logoutAccount = () => {
@@ -33,12 +36,28 @@ const Top = ({set_token, user_details}) => {
                 </div> */}
 
                 <div className="adminDiv flex">
-                    <MdOutlineEmail className='icon' />
-                    <RiLogoutCircleLine className='icon' onClick={logoutAccount} />
 
-                    <div className="adminImage">
-                        <img src={img} alt="Admin Image" />
-                    </div>
+                    <Tooltip title="Email Us" placement="bottom" arrow>
+                        <span>
+                            <MdOutlineEmail className='icon' />
+                        </span>
+                    </Tooltip>
+
+                    <Tooltip title="Logout" placement="bottom" arrow>
+                        <span>
+                            <RiLogoutCircleLine className='icon' onClick={logoutAccount} />
+                        </span>
+                    </Tooltip>
+
+
+                    <Tooltip title="My Profile" placement="bottom" arrow>
+                        <span>
+                            <div className="adminImage">
+                                <img src={img} alt="Admin Image" />
+                            </div>
+                        </span>
+                    </Tooltip>
+
                 </div>
             </div>
         </div>

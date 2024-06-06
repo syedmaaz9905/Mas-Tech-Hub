@@ -16,7 +16,7 @@ const SignupForm = ({ onSwitchMode }) => {
     const [accountType, setAccountType] = useState('')
     const [alertMessage, setAlertMessage] = useState(null)
     const [alertType, setAlertType] = useState('error')
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleAccountTypeChange = (event) => {
         setAccountType(event.target.value)
@@ -47,9 +47,8 @@ const SignupForm = ({ onSwitchMode }) => {
         return true;
     };
 
-
     const signUpHandle = async () => {
-    
+
         if (!validateForm()) {
             setTimeout(() => {
                 setAlertMessage(null);
@@ -61,10 +60,10 @@ const SignupForm = ({ onSwitchMode }) => {
         axios.post(API_URL + 'signup_account', {
             name: accountName,
             email: accountEmail,
-            password:  accountPassword,
+            password: accountPassword,
             account_type: accountType
         }).then((response) => {
-            if(response.status===200){
+            if (response.status === 200) {
                 setAlertType('success');
                 setAlertMessage('Account has been created successfully! Kindly wait, let the admin accept your account.');
                 setOpen(false);
@@ -76,14 +75,20 @@ const SignupForm = ({ onSwitchMode }) => {
             }
         }).catch((error) => {
             console.log("Error", error);
-            setAlertMessage(error.response.data); 
+            setAlertMessage(error.response.data);
             setOpen(false);
             setTimeout(() => {
                 setAlertMessage(null);
             }, 2000);
         })
     }
-    
+
+    const handleKeyPress = (event) => {
+        if (event.key === 'Enter') {
+            signUpHandle();
+        }
+    }
+
     return (
         <Stack
             justifyContent='center'
@@ -106,10 +111,10 @@ const SignupForm = ({ onSwitchMode }) => {
                     left: '50%',
                     transform: 'translateX(-50%)',
                     zIndex: '999',
-                    width: '90%', 
-                    maxWidth: '500px', 
-                    padding: '0 16px', 
-                    boxSizing: 'border-box' 
+                    width: '90%',
+                    maxWidth: '500px',
+                    padding: '0 16px',
+                    boxSizing: 'border-box'
                 }}>
                     <Alert severity={alertType}>{alertMessage}</Alert>
                 </div>
@@ -138,21 +143,21 @@ const SignupForm = ({ onSwitchMode }) => {
                             <Typography color={colors.grey[800]}>
                                 Name
                             </Typography>
-                            <TextField onChange={(e) => setAccountName(e.target.value)}/>
+                            <TextField onChange={(e) => setAccountName(e.target.value)} onKeyPress={handleKeyPress} />
                         </Stack>
 
                         <Stack spacing={1}>
                             <Typography color={colors.grey[800]}>
                                 Email
                             </Typography>
-                            <TextField onChange={(e) => setAccountEmail(e.target.value)} />
+                            <TextField onChange={(e) => setAccountEmail(e.target.value)} onKeyPress={handleKeyPress} />
                         </Stack>
 
                         <Stack spacing={1}>
                             <Typography color={colors.grey[800]}>
                                 Password
                             </Typography>
-                            <TextField type='password' onChange={(e) => setAccountPassword(e.target.value)} />
+                            <TextField type='password' onChange={(e) => setAccountPassword(e.target.value)} onKeyPress={handleKeyPress} />
                         </Stack>
 
                         <Stack spacing={1}>
@@ -165,6 +170,7 @@ const SignupForm = ({ onSwitchMode }) => {
                                     id="account-type"
                                     value={accountType}
                                     onChange={handleAccountTypeChange}
+                                    onKeyPress={handleKeyPress}
                                 >
                                     <MenuItem value="admin">Admin Account</MenuItem>
                                     <MenuItem value="volunteer">Volunteer Account</MenuItem>
@@ -183,7 +189,6 @@ const SignupForm = ({ onSwitchMode }) => {
                             }
                         }}
                         onClick={signUpHandle}
-                        // onClick={()=>navigate('/dashboard')}
                     >
                         SignUp
                     </Button>

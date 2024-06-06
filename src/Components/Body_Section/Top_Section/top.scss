@@ -63,6 +63,7 @@
         .adminDiv {
             gap: 1rem;
 
+
             .icon {
                 font-size: var(--biggestFontSize);
                 background: var(--whiteColor);
@@ -75,6 +76,7 @@
                 &:hover {
                     background: var(--paleGreen);
                     transform: scale(1.1);
+                    color: rgb(44, 187, 9);
                 }
             }
 
@@ -84,6 +86,7 @@
                 width: 2.5rem;
                 overflow: hidden;
                 box-shadow: 0 2px 4px var(--inputColor);
+                cursor: pointer;
 
                 img {
                     width: 100%;

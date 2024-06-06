@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import './sidebar.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 
 // Imported Images
 import logo from '../../Assets/Images/logo.png'
@@ -11,13 +11,19 @@ import { FaFolder, FaTruck } from "react-icons/fa";
 import { FaClockRotateLeft } from 'react-icons/fa6';
 import { BsQuestionCircle } from "react-icons/bs";
 import { FaUserAlt } from "react-icons/fa";
+import { MdLogout } from "react-icons/md";
 
-const Sidebar = ({ activeItem, setActiveItem }) => {
-
+const Sidebar = ({ activeItem, setActiveItem, set_token }) => {
     const handleItemClick = (itemName) => {
         setActiveItem(itemName);
     };
 
+    const navigate = useNavigate()
+    const logoutAccount = () => {
+        localStorage.clear();
+        set_token(null);
+        navigate('/signin');
+    }
 
     return (
         <div className='sideBar grid'>
@@ -79,7 +85,15 @@ const Sidebar = ({ activeItem, setActiveItem }) => {
                         </Link>
                     </li>
 
+                    <li className={`listItem`}>
+                        <Link to="#" className='menuLink flex' onClick={logoutAccount}>
+                            <MdLogout className='icon' />
+                            <span className="smallText">Logout</span>
+                        </Link>
+                    </li>
+
                 </ul>
+            
             </div>
 
             <div className="sideBarCard">
