@@ -152,6 +152,10 @@
             flex: 1 1 100%;
         }
     }
+
+    .btn-truck-operations-main{
+        flex-direction: column;
+    }
 }
 
 @media screen and (max-width: 385px) {
