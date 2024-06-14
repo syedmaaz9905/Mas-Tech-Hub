@@ -5,12 +5,10 @@ import TabsTruckOperations from './components/tabs_truck_operations/TabsTruckOpe
 const Truck = () => {
     return (
         <div>
-
             <div className='truckMain'>
                 <div className="truckTitle">
                     <h2>Truck Page</h2>
                 </div>
-
             </div>
             
             <div className='truckBodyMain'>
