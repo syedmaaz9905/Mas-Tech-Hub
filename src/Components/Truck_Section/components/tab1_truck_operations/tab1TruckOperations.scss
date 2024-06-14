@@ -55,6 +55,7 @@
         display: flex;
         justify-content: center;
         align-items: center;
+        gap: 2rem;
 
         .btn-truck-operations {
             text-decoration: none;
@@ -84,7 +85,8 @@
             width: 100%;
             border-collapse: collapse;
 
-            th, td {
+            th,
+            td {
                 border: 1px solid var(--greyText);
                 padding: 10px;
                 text-align: center;
@@ -95,6 +97,11 @@
                 background-color: var(--paleGreen);
             }
 
+            td {
+                font-size: 13px;
+                font-weight: 500;
+            }
+
             tr.resolved {
                 background-color: var(--paleGreen);
             }
@@ -102,6 +109,31 @@
             tr:not(.resolved) {
                 background-color: initial;
             }
+
+            .deleteIconTable {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                transition-duration: 300ms;                
+
+                &:hover {
+                    color: #ee0707;
+                    transform: scale(1.1);
+                }
+            }
+
+            .resolveIconTable {
+                width: 22px;
+                height: 22px;
+                cursor: pointer;
+                transition-duration: 300ms;
+
+                &:hover {
+                    color: #28b904;
+                    transform: scale(1.1);
+                }
+            }
+
         }
     }
 }

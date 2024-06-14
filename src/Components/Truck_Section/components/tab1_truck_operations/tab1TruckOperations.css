@@ -48,6 +48,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  gap: 2rem;
 }
 .tabMainContainer .btn-truck-operations-main .btn-truck-operations {
   text-decoration: none;
@@ -74,7 +75,8 @@
   width: 100%;
   border-collapse: collapse;
 }
-.tabMainContainer .table-container table th, .tabMainContainer .table-container table td {
+.tabMainContainer .table-container table th,
+.tabMainContainer .table-container table td {
   border: 1px solid var(--greyText);
   padding: 10px;
   text-align: center;
@@ -83,11 +85,35 @@
 .tabMainContainer .table-container table th {
   background-color: var(--paleGreen);
 }
+.tabMainContainer .table-container table td {
+  font-size: 13px;
+  font-weight: 500;
+}
 .tabMainContainer .table-container table tr.resolved {
   background-color: var(--paleGreen);
 }
 .tabMainContainer .table-container table tr:not(.resolved) {
   background-color: initial;
+}
+.tabMainContainer .table-container table .deleteIconTable {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition-duration: 300ms;
+}
+.tabMainContainer .table-container table .deleteIconTable:hover {
+  color: #ee0707;
+  transform: scale(1.1);
+}
+.tabMainContainer .table-container table .resolveIconTable {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  transition-duration: 300ms;
+}
+.tabMainContainer .table-container table .resolveIconTable:hover {
+  color: #28b904;
+  transform: scale(1.1);
 }
 
 @media screen and (max-width: 1250px) {

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './tab1TruckOperations.css';
+import { MdDeleteForever } from "react-icons/md";
+import { SiDavinciresolve } from "react-icons/si";
 
 const Tab1TruckOperations = () => {
     const [formData, setFormData] = useState({
@@ -93,6 +95,53 @@ const Tab1TruckOperations = () => {
         localStorage.setItem('operations', JSON.stringify(updatedOperations));
     };
 
+    const exportToCSV = () => {
+        if (operations.length === 0) {
+            alert("No operations to export.");
+            return;
+        }
+
+        const headers = [
+            "Request Number",
+            "Truck Location",
+            "Booth Location",
+            "Request",
+            "Notes",
+            "Assigned Driver",
+            "Request TimeStamp",
+            "Request Time Elapsed",
+            "Priority",
+            "Resolved"
+        ];
+
+        const rows = operations.map(operation => [
+            operation.requestNumber,
+            operation.truckLocation,
+            operation.boothLocation,
+            operation.request,
+            operation.notes,
+            operation.assignedDriver,
+            operation.requestTimeStamp,
+            operation.requestTimeElapsed,
+            operation.priority,
+            operation.resolved ? "Yes" : "No"
+        ]);
+
+        const csvContent = [
+            headers.join(","),
+            ...rows.map(row => row.join(","))
+        ].join("\n");
+
+        const blob = new Blob([csvContent], { type: "text/csv" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "operations.csv";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    };
+
     return (
         <div className="tabMainContainer">
             <div className="form-container">
@@ -154,6 +203,9 @@ const Tab1TruckOperations = () => {
                 <button className='btn-truck-operations' onClick={addOperation}>
                     Add Operation
                 </button>
+                <button className='btn-truck-operations' onClick={exportToCSV}>
+                    Export to CSV
+                </button>
             </div>
 
             <div className="table-container">
@@ -189,8 +241,8 @@ const Tab1TruckOperations = () => {
                                 <td>0:00</td>
                                 <td>0:00</td>
                                 <td>{operation.priority}</td>
-                                <td><button onClick={() => deleteOperation(operation.requestNumber)}>Delete</button></td>
-                                <td><button onClick={() => resolveOperation(operation.requestNumber)}>Resolve</button></td>
+                                <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation.requestNumber)} /></td>
+                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation.requestNumber)} /></td>
                             </tr>
                         ))}
                     </tbody>

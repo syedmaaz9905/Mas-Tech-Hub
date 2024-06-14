@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import './tabTruckOperations.css';
 import Tab1TruckOperations from '../tab1_truck_operations/Tab1TruckOperations';
+import Tab2TruckOperations from '../tab2_truck_operations/Tab2TruckOperations';
 
 const TabsTruckOperations = () => {
     const [activeTab, setActiveTab] = useState('Operations');
@@ -27,7 +28,7 @@ const TabsTruckOperations = () => {
             </div>
             <div className="tab-content">
                 {activeTab === 'Operations' && <div><Tab1TruckOperations /></div>}
-                {activeTab === 'Driver Profile' && <div>Driver Profile Content</div>}
+                {activeTab === 'Driver Profile' && <div><Tab2TruckOperations /></div>}
             </div>
         </div>
     );
