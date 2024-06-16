@@ -17,4 +17,146 @@
   --normalFontSize: 0.938rem;
   --smallFontSize: 0.813rem;
   --smalledFontSize: 0.75rem;
+}
+
+.admin-operations-body {
+  padding: 20px;
+  background-color: var(--bgColor);
+  color: var(--textColor);
+  border-radius: 10px;
+}
+.admin-operations-body .search-container {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.admin-operations-body .search-container .search-input {
+  width: 80%;
+  max-width: 400px;
+  padding: 10px;
+  border: 1px solid var(--greyText);
+  border-radius: 5px;
+  font-size: var(--normalFontSize);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  outline: none;
+  transition: all 0.3s ease;
+}
+.admin-operations-body .search-container .search-input:hover {
+  border-color: var(--paleGreen);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+.admin-operations-body .search-container .search-input:focus {
+  border-color: var(--PrimaryColor);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+.admin-operations-body .table-container {
+  overflow-x: auto;
+}
+.admin-operations-body .table-container .responsive-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.admin-operations-body .table-container .responsive-table th,
+.admin-operations-body .table-container .responsive-table td {
+  padding: 10px;
+  border: 1px solid var(--greyText);
+}
+.admin-operations-body .table-container .responsive-table th {
+  background-color: var(--PrimaryColor);
+  color: var(--whiteColor);
+}
+.admin-operations-body .table-container .responsive-table td {
+  background-color: var(--whiteColor);
+}
+.admin-operations-body .table-container .responsive-table .delete-btn {
+  background-color: var(--deleteColor);
+  color: var(--whiteColor);
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+.admin-operations-body .table-container .responsive-table .delete-btn:hover {
+  background-color: var(--deleteHoverColor);
+}
+.admin-operations-body .pagination {
+  margin-top: 1rem;
+  display: flex;
+  justify-content: start;
+  align-items: start;
+  gap: 1rem;
+}
+.admin-operations-body .pagination .pagination-button-prev {
+  text-decoration: none;
+  outline: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: var(--paleGreen);
+  border: 2px solid var(--PrimaryColor);
+  color: #000;
+  font-weight: 600;
+  transition-duration: 300ms;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.admin-operations-body .pagination .pagination-button-prev:hover {
+  transform: translateY(-4px);
+  background: var(--PrimaryColor);
+  color: #fff;
+}
+.admin-operations-body .pagination .pagination-button-prev:disabled {
+  background: var(--greyText);
+  border-color: var(--greyText);
+  cursor: not-allowed;
+  color: var(--textColor);
+}
+.admin-operations-body .pagination .pagination-button-prev p {
+  width: 100%;
+}
+.admin-operations-body .pagination .pagination-button-next {
+  text-decoration: none;
+  outline: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: var(--paleGreen);
+  border: 2px solid var(--PrimaryColor);
+  color: #000;
+  font-weight: 600;
+  transition-duration: 300ms;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+}
+.admin-operations-body .pagination .pagination-button-next:hover {
+  transform: translateY(-4px);
+  background: var(--PrimaryColor);
+  color: #fff;
+}
+.admin-operations-body .pagination .pagination-button-next:disabled {
+  background: var(--greyText);
+  border-color: var(--greyText);
+  cursor: not-allowed;
+  color: var(--textColor);
+}
+.admin-operations-body .pagination .pagination-button-next p {
+  width: 100%;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .admin-operations-body .table-container .responsive-table th,
+  .admin-operations-body .table-container .responsive-table td {
+    padding: 8px;
+    font-size: var(--smallFontSize);
+  }
+}
+@media screen and (max-width: 370px) {
+  .admin-operations-body .pagination {
+    flex-direction: column;
+  }
 }/*# sourceMappingURL=adminOperationsBody.css.map */
