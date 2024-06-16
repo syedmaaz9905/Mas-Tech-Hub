@@ -65,6 +65,9 @@
   background-color: var(--PrimaryColor);
   color: var(--whiteColor);
 }
+.admin-operations-body .table-container .responsive-table td {
+  font-weight: 600;
+}
 .admin-operations-body .table-container .responsive-table tbody tr {
   background-color: var(--whiteColor);
 }
