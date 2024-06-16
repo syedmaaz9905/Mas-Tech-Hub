@@ -6,6 +6,7 @@ import Truck from '../Truck_Section/Truck';
 import Vendor from '../Vendor_Section/Vendor';
 import Csvdata from '../CsvData_Section/Csvdata';
 import Profile from '../Profile_Section/Profile';
+import AdminOperations from '../AdminOperations_Section/AdminOperations';
 
 const Body = ({ activeItem, user_details, set_token }) => {
     return (
@@ -16,6 +17,7 @@ const Body = ({ activeItem, user_details, set_token }) => {
             {activeItem === 'vendor' && <Vendor />}
             {activeItem === 'csvdata' && <Csvdata />}
             {activeItem === 'profile' && <Profile />}
+            {activeItem === 'adminOperations' && <AdminOperations />}
         </div>
     );
 };

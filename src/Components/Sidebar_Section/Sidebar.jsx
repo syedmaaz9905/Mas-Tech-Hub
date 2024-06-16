@@ -12,6 +12,7 @@ import { FaClockRotateLeft } from 'react-icons/fa6';
 import { BsQuestionCircle } from "react-icons/bs";
 import { FaUserAlt } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
+import { MdAdminPanelSettings } from "react-icons/md";
 
 const Sidebar = ({ activeItem, setActiveItem, set_token }) => {
     const handleItemClick = (itemName) => {
@@ -82,6 +83,13 @@ const Sidebar = ({ activeItem, setActiveItem, set_token }) => {
                         <Link to="#" className='menuLink flex' onClick={() => handleItemClick('profile')}>
                             <FaUserAlt className='icon' />
                             <span className="smallText">Profile</span>
+                        </Link>
+                    </li>
+
+                    <li className={`listItem ${activeItem === 'adminOperations' ? 'active' : ''}`}>
+                        <Link to="#" className='menuLink flex' onClick={() => handleItemClick('adminOperations')}>
+                            <MdAdminPanelSettings className='icon' />
+                            <span className="smallText">Admin Operations</span>
                         </Link>
                     </li>
 

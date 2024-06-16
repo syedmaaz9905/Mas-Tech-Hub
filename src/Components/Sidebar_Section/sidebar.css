@@ -86,6 +86,10 @@
   color: var(--PrimaryColor);
   transition: 0;
 }
+.sideBar .menuDiv .menuLists .listItem.active,
+.sideBar .settingsDiv .menuLists .listItem.active {
+  color: var(--PrimaryColor);
+}
 .sideBar .menuDiv .menuLists .listItem:hover::before,
 .sideBar .settingsDiv .menuLists .listItem:hover::before {
   height: 100%;
