@@ -8,21 +8,21 @@ const AdminOperationsBody = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [entriesPerPage] = useState(10);
     const tableData = [
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
-        { name: 'John Doe', email: 'john@example.com', password: '********' },
-        { name: 'Jane Smith', email: 'jane@example.com', password: '********' },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending' },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
+        { name: 'John Doe', email: 'john@example.com', accountType: 'Vendor', status: 'Pending'  },
+        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
     ];
 
     const handleSearch = (event) => {
@@ -58,8 +58,9 @@ const AdminOperationsBody = () => {
                         <tr>
                             <th>Name</th>
                             <th>Email</th>
-                            <th>Password</th>
-                            <th>Delete</th>
+                            <th>Account Type</th>
+                            <th>Status</th>
+                            <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -67,8 +68,14 @@ const AdminOperationsBody = () => {
                             <tr key={index}>
                                 <td>{row.name}</td>
                                 <td>{row.email}</td>
-                                <td>{row.password}</td>
-                                <td><button className="delete-btn">Delete</button></td>
+                                <td>{row.accountType}</td>
+                                <td style={{ color: row.status === 'Active' ? 'green' : 'red' }}>{row.status}</td>
+                                <td>
+                                    <div className='table-action-buttons'>
+                                        <button className='table-action-button-accept'>Accept</button>
+                                        <button className='table-action-button-cancel'>Cancel</button>
+                                    </div>
+                                </td>
                             </tr>
                         ))}
                     </tbody>

@@ -65,8 +65,52 @@
   background-color: var(--PrimaryColor);
   color: var(--whiteColor);
 }
-.admin-operations-body .table-container .responsive-table td {
+.admin-operations-body .table-container .responsive-table tbody tr {
   background-color: var(--whiteColor);
+}
+.admin-operations-body .table-container .responsive-table tbody tr:hover {
+  background-color: #e4e4e4;
+}
+.admin-operations-body .table-container .responsive-table .table-action-buttons {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+  gap: 5px;
+}
+.admin-operations-body .table-container .responsive-table .table-action-buttons .table-action-button-accept {
+  text-decoration: none;
+  outline: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: var(--paleGreen);
+  border: 2px solid var(--PrimaryColor);
+  color: #000;
+  font-weight: 600;
+  transition-duration: 300ms;
+}
+.admin-operations-body .table-container .responsive-table .table-action-buttons .table-action-button-accept:hover {
+  transform: scale(1.1);
+  background: var(--PrimaryColor);
+  color: #fff;
+}
+.admin-operations-body .table-container .responsive-table .table-action-buttons .table-action-button-cancel {
+  text-decoration: none;
+  outline: none;
+  padding: 4px 10px;
+  cursor: pointer;
+  border-radius: 6px;
+  background: rgba(255, 0, 0, 0.2117647059);
+  border: 2px solid #ff6060;
+  color: #000;
+  font-weight: 600;
+  transition-duration: 300ms;
+}
+.admin-operations-body .table-container .responsive-table .table-action-buttons .table-action-button-cancel:hover {
+  transform: scale(1.1);
+  background: #ff6060;
+  color: #fff;
 }
 .admin-operations-body .table-container .responsive-table .delete-btn {
   background-color: var(--deleteColor);
