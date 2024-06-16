@@ -60,7 +60,7 @@
   content: "";
   height: 0%;
   left: 0;
-  width: 5px;
+  width: 6px;
   bottom: 0;
   border-top-right-radius: 10px;
   border-bottom-right-radius: 10px;
@@ -70,6 +70,15 @@
 .sideBar .settingsDiv .menuLists .listItem.active {
   padding: 1rem;
   background-color: var(--HoverColor);
+  border-left: 6px solid var(--PrimaryColor);
+}
+.sideBar .menuDiv .menuLists .listItem.active .icon,
+.sideBar .settingsDiv .menuLists .listItem.active .icon {
+  color: var(--PrimaryColor);
+}
+.sideBar .menuDiv .menuLists .listItem.active .smallText,
+.sideBar .settingsDiv .menuLists .listItem.active .smallText {
+  color: var(--PrimaryColor);
 }
 .sideBar .menuDiv .menuLists .listItem .menuLink,
 .sideBar .settingsDiv .menuLists .listItem .menuLink {
@@ -182,14 +191,17 @@
     display: none;
   }
   .menuDiv .divTitle,
-  .menuDiv .smallText, .settingsDiv .divTitle,
+  .menuDiv .smallText,
+  .settingsDiv .divTitle,
   .settingsDiv .smallText {
     display: none;
   }
-  .menuDiv .menuLists .listItem .menuLink, .settingsDiv .menuLists .listItem .menuLink {
+  .menuDiv .menuLists .listItem .menuLink,
+  .settingsDiv .menuLists .listItem .menuLink {
     justify-content: center;
   }
-  .menuDiv .menuLists .listItem .menuLink .icon, .settingsDiv .menuLists .listItem .menuLink .icon {
+  .menuDiv .menuLists .listItem .menuLink .icon,
+  .settingsDiv .menuLists .listItem .menuLink .icon {
     font-size: var(--h1FontSize);
   }
 }

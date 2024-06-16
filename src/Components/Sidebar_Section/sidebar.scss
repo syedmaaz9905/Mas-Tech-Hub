@@ -65,7 +65,7 @@
                     content: '';
                     height: 0%;
                     left: 0;
-                    width: 5px;
+                    width: 6px;
                     bottom: 0;
                     border-top-right-radius: 10px;
                     border-bottom-right-radius: 10px;
@@ -75,6 +75,15 @@
                 &.active {
                     padding: 1rem;
                     background-color: var(--HoverColor);
+                    border-left: 6px solid var(--PrimaryColor);
+
+                    .icon {
+                        color: var(--PrimaryColor);
+                    }
+
+                    .smallText {
+                        color: var(--PrimaryColor);
+                    }
                 }
 
                 .menuLink {
@@ -207,7 +216,8 @@
         }
     }
 
-    .menuDiv, .settingsDiv {
+    .menuDiv,
+    .settingsDiv {
 
         .divTitle,
         .smallText {
@@ -219,7 +229,7 @@
                 .menuLink {
                     justify-content: center;
 
-                    .icon{
+                    .icon {
                         font-size: var(--h1FontSize);
                     }
                 }
@@ -240,7 +250,7 @@
                     .menuLink {
                         justify-content: center;
 
-                        .icon{
+                        .icon {
                             font-size: var(--h2FontSize);
                         }
                     }
