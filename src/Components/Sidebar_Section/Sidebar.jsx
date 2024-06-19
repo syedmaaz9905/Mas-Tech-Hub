@@ -61,12 +61,12 @@ const Sidebar = ({ activeItem, setActiveItem, user_details, set_token }) => {
                         </Link>
                     </li>
 
-                    <li className={`listItem ${activeItem === 'csvdata' ? 'active' : ''}`}>
+                    {/* <li className={`listItem ${activeItem === 'csvdata' ? 'active' : ''}`}>
                         <Link to="#" className='menuLink flex' onClick={() => handleItemClick('csvdata')}>
                             <FaFolder className='icon' />
                             <span className="smallText">Combine CSV Data</span>
                         </Link>
-                    </li>
+                    </li> */}
 
                 </ul>
             </div>
