@@ -42,7 +42,7 @@ const AdminOperations = ({ user_details }) => {
             </div>
 
             <div className='adminOperationsBodyMain'>
-                {!open && <AdminOperationsBody user_data={user_data} set_user_data={setUserData} open_backdrop={setOpen} />}
+                {!open && <AdminOperationsBody user_data={user_data} set_user_data={setUserData} />}
             </div>
         </div>
     )
