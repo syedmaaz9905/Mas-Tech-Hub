@@ -1,39 +1,90 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './adminOperationsBody.css';
 
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
+import axios from 'axios';
 
-const AdminOperationsBody = () => {
+
+let API_URL = 'https://backend.srv533347.hstgr.cloud/';
+const AdminOperationsBody = ({user_data, set_user_data, open_backdrop}) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
     const [entriesPerPage] = useState(10);
-    const tableData = [
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending' },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
-        { name: 'John Doe', email: 'john@example.com', accountType: 'Vendor', status: 'Pending'  },
-        { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
-    ];
+    // const tableData = [
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending' },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Pending'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Active'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Admin', status: 'Active'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Admin', status: 'Active'  },
+    //     { name: 'John Doe', email: 'john@example.com', accountType: 'Vendor', status: 'Pending'  },
+    //     { name: 'Jane Smith', email: 'jane@example.com', accountType: 'Vendor', status: 'Pending'  },
+    // ];
+
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
         setCurrentPage(1);
     };
 
-    const filteredData = tableData.filter(row =>
-        row.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.email.toLowerCase().includes(searchTerm.toLowerCase())
+    const handleDelete = (id) => {
+        open_backdrop(true)
+        axios.delete(API_URL + 'delete_user', {
+            params: {
+                id: id
+            }
+        }).then((response) => {
+            if (response.data){
+                set_user_data(user_data.filter(row => row.id!== id));
+            }
+            else{
+                console.log(response.data);
+            }
+        }).catch((err) => {
+            console.log(err);
+        })
+        open_backdrop(false)
+    };
+
+    const handleActiveInactive = (id, status) => {
+        open_backdrop(true)
+        status = 'active' ? status!=="active" : 'inactive';
+        axios.put(API_URL + 'update_user_status', 
+            {status: status, id: id}).then((response) => {
+                if (response.data){
+                    set_user_data(user_data.map(row => {
+                        if (row.id === id) {
+                            row.status = status;
+                        }
+                        return row;
+                    }));
+                }
+                else{
+                    console.log(response.data);
+                }
+            }).catch((err) => {
+                console.log(err);
+            })
+            open_backdrop(false)
+    };
+
+    const filteredData = user_data.filter(row =>
+        row.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        row.Email.toLowerCase().includes(searchTerm.toLowerCase())
     );
+    function toTitleCase(str) {
+        return str.replace(
+          /\w\S*/g,
+          text => text.charAt(0).toUpperCase() + text.substring(1).toLowerCase()
+        );
+      }
 
     const indexOfLastEntry = currentPage * entriesPerPage;
     const indexOfFirstEntry = indexOfLastEntry - entriesPerPage;
@@ -65,15 +116,17 @@ const AdminOperationsBody = () => {
                     </thead>
                     <tbody>
                         {currentEntries.map((row, index) => (
-                            <tr key={index}>
-                                <td>{row.name}</td>
-                                <td>{row.email}</td>
-                                <td>{row.accountType}</td>
-                                <td style={{ color: row.status === 'Active' ? 'green' : 'red' }}>{row.status}</td>
+                            <tr key={row.ID}>
+                                <td>{row.Name}</td>
+                                <td>{row.Email}</td>
+                                <td>{row.Role}</td>
+                                <td style={{ color: row.AccountStatus === 'active' ? 'green' : 'red' }}>{toTitleCase(row.AccountStatus)}</td>
                                 <td>
                                     <div className='table-action-buttons'>
-                                        <button className='table-action-button-accept'>Accept</button>
-                                        <button className='table-action-button-cancel'>Cancel</button>
+                                        <button className='table-action-button-accept' onClick={() => {handleActiveInactive(row.ID, row.AccountStatus)}}>
+                                            {row.AccountStatus === 'inactive'?'Activate': 'InActivate'}</button>
+                                        <button className='table-action-button-cancel' onClick={() => {handleDelete(row.ID)}}>
+                                            Delete</button>
                                     </div>
                                 </td>
                             </tr>

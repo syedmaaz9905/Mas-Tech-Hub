@@ -14,7 +14,7 @@ import { FaUserAlt } from "react-icons/fa";
 import { MdLogout } from "react-icons/md";
 import { MdAdminPanelSettings } from "react-icons/md";
 
-const Sidebar = ({ activeItem, setActiveItem, set_token }) => {
+const Sidebar = ({ activeItem, setActiveItem, user_details, set_token }) => {
     const handleItemClick = (itemName) => {
         setActiveItem(itemName);
     };
@@ -86,12 +86,12 @@ const Sidebar = ({ activeItem, setActiveItem, set_token }) => {
                         </Link>
                     </li>
 
-                    <li className={`listItem ${activeItem === 'adminOperations' ? 'active' : ''}`}>
+                    {user_details.Role!=="volunteer" && <li className={`listItem ${activeItem === 'adminOperations' ? 'active' : ''}`}>
                         <Link to="#" className='menuLink flex' onClick={() => handleItemClick('adminOperations')}>
                             <MdAdminPanelSettings className='icon' />
                             <span className="smallText">Admin Operations</span>
                         </Link>
-                    </li>
+                    </li>}
 
                     <li className={`listItem`}>
                         <Link to="#" className='menuLink flex' onClick={logoutAccount}>

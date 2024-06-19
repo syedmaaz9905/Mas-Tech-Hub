@@ -18,7 +18,6 @@ const Top = ({ set_token, user_details }) => {
         set_token(null);
         navigate('/signin');
     }
-    console.log(user_details)
     return (
         <div className='topSection'>
             <div className="headerSection flex">

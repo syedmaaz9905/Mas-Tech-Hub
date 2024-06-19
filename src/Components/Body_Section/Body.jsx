@@ -17,7 +17,7 @@ const Body = ({ activeItem, user_details, set_token }) => {
             {activeItem === 'vendor' && <Vendor />}
             {activeItem === 'csvdata' && <Csvdata />}
             {activeItem === 'profile' && <Profile />}
-            {activeItem === 'adminOperations' && <AdminOperations />}
+            {activeItem === 'adminOperations' && <AdminOperations user_details={user_details} />}
         </div>
     );
 };
