@@ -17,26 +17,54 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
         setCurrentPage(1);
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = (id, stat) => {
         setOpen(true)
-        axios.delete(API_URL + 'delete_user', {
-            params: {
-                id: id
-            }
-        }).then((response) => {
-            if (response.data) {
-                set_user_data(user_data.filter(row => row.ID !== id));
+        let status = "deleted";
+        if (stat === "pending") {
+            status = "rejected";
+        }
+        if (stat === "deleted") {
+            axios.delete(API_URL + 'delete_user', {
+                params: {
+                    id: id
+                }
+            }).then((response) => {
+                if (response.data) {
+                    set_user_data(user_data.filter(row => row.ID !== id));
+                    setOpen(false)
+                }
+                else {
+                    console.log(response.data);
+                    setOpen(false)
+                }
+            }).catch((err) => {
+                console.log(err);
                 setOpen(false)
-            }
-            else {
-                console.log(response.data);
-                setOpen(false)
-            }
-        }).catch((err) => {
-            console.log(err);
-            setOpen(false)
-        })
-        
+            })
+        }
+        else {
+
+            axios.put(API_URL + 'update_user_status',
+                { status: status, id: id }).then((response) => {
+                    if (response.data) {
+                        set_user_data(user_data.map(row => {
+                            if (row.ID === id) {
+                                row.AccountStatus = status;
+                            }
+                            return row;
+                        }));
+                        setOpen(false)
+                    }
+                    else {
+                        console.log(response.data);
+                        setOpen(false)
+                    }
+                }).catch((err) => {
+                    console.log(err);
+                    setOpen(false)
+                })
+        }
+
     };
 
     const handleActiveInactive = (id, stat) => {
@@ -122,9 +150,9 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                                     <td>
                                         <div className='table-action-buttons'>
                                             <button className='table-action-button-accept' onClick={() => { handleActiveInactive(row.ID, row.AccountStatus) }}>
-                                                {row.AccountStatus === 'inactive' ? 'Activate' : 'InActivate'}</button>
-                                            <button className='table-action-button-cancel' onClick={() => { handleDelete(row.ID) }}>
-                                                Delete</button>
+                                                {row.AccountStatus === 'inactive' ? 'Activate': row.AccountStatus === 'pending' ? 'Activate': row.AccountStatus === 'rejected' ? 'Activate' : row.AccountStatus === 'deleted' ? 'Reinstate' : 'InActivate'}</button>
+                                            <button className='table-action-button-cancel' onClick={() => { handleDelete(row.ID, row.AccountStatus) }}>
+                                                {row.AccountStatus === 'deleted' ? 'Delete Permanently' : row.AccountStatus === 'pending' ? 'Reject' : 'Delete'}</button>
                                         </div>
                                     </td>
                                 </tr>
