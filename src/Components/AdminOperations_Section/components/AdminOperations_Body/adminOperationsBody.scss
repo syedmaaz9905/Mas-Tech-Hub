@@ -28,7 +28,11 @@
 
     .search-container {
         margin-bottom: 20px;
-        text-align: center;
+        display: flex;
+        width: 100%;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
 
         .search-input {
             width: 80%;
@@ -50,6 +54,15 @@
                 border-color: var(--PrimaryColor);
                 box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
             }
+        }
+
+        .filter-dropdown {
+            padding: 10px;
+            border: 1px solid var(--greyText);
+            border-radius: 4px;
+            font-size: var(--normalFontSize);
+            background-color: var(--inputColor);
+            color: var(--textColor);
         }
     }
 
@@ -90,7 +103,7 @@
             .table-action-buttons {
                 display: flex;
                 flex-direction: row;
-                justify-content: space-around;
+                justify-content: flex-start;
                 align-items: center;
                 gap: 5px;
 
@@ -124,6 +137,7 @@
                     color: #000;
                     font-weight: 600;
                     transition-duration: 300ms;
+                    margin-left: 20px;
 
                     &:hover {
                         transform: scale(1.1);
@@ -226,11 +240,144 @@
             }
         }
     }
+
+    .clear-export-buttons{
+        display: flex;
+        flex-direction: row;
+        justify-content: center;
+        align-items: center;
+        margin-top: 2rem;
+        gap: 2rem;
+
+        .clear-all-data-button{
+            text-decoration: none;
+            outline: none;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            background: var(--paleGreen);
+            border: 2px solid var(--PrimaryColor);
+            color: #000;
+            font-weight: 600;
+            transition-duration: 300ms;
+
+            &:hover {
+                transform: translateY(-4px);
+                background: var(--PrimaryColor);
+                color: #fff;
+            }
+        }
+
+        .export-to-csv-button{
+            text-decoration: none;
+            outline: none;
+            padding: 15px;
+            cursor: pointer;
+            border-radius: 6px;
+            background: var(--paleGreen);
+            border: 2px solid var(--PrimaryColor);
+            color: #000;
+            font-weight: 600;
+            transition-duration: 300ms;
+
+            &:hover {
+                transform: translateY(-4px);
+                background: var(--PrimaryColor);
+                color: #fff;
+            }
+        }
+    }
+}
+
+/* Modal styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal {
+    background-color: white;
+    padding: 20px;
+    border-radius: 8px;
+    width: 400px;
+    max-width: 90%;
+    text-align: center;
+}
+
+.modal h2 {
+    margin-bottom: 10px;
+}
+
+.modal p {
+    margin-bottom: 20px;
+}
+
+.modal-input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.modal-error {
+    color: red;
+    margin-bottom: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    justify-content: center;
+}
+
+.modal-button-cancel,
+.modal-button-confirm {
+    padding: 10px 20px;
+    margin: 0 5px;
+    border: none;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+.modal-button-cancel {
+    background-color: #f44336;
+    color: white;
+
+    &:hover{
+        background-color: #b80f03;
+        transform: scale(1.1);
+    }
+}
+
+.modal-button-confirm {
+    background-color: #4caf50;
+    color: white;
+
+    &:hover{
+        background-color: #09790d;
+        transform: scale(1.1);
+    }
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
     .admin-operations-body {
+        .search-container {
+            flex-direction: column;
+            align-items: start;
+            gap: 1rem;
+        }
+
         .table-container {
             .responsive-table {
 

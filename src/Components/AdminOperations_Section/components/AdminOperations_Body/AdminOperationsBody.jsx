@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './adminOperationsBody.css';
 import { FaAngleRight, FaAngleLeft } from "react-icons/fa";
 import axios from 'axios';
 import Backdrop from '@mui/material/Backdrop';
 import CircularProgress from '@mui/material/CircularProgress';
+import Swal from 'sweetalert2';
 
 let API_URL = 'https://backend.srv533347.hstgr.cloud/';
 const AdminOperationsBody = ({ user_data, set_user_data }) => {
@@ -11,39 +12,63 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
     const [currentPage, setCurrentPage] = useState(1);
     const [entriesPerPage] = useState(10);
     const [open, setOpen] = useState(false);
+    const [filter, setFilter] = useState('all');
+    const [confirmInput, setConfirmInput] = useState('');
+    const [error, setError] = useState('');
+    const [isModalOpen, setIsModalOpen] = useState(false);
 
     const handleSearch = (event) => {
         setSearchTerm(event.target.value);
         setCurrentPage(1);
     };
 
-    const handleDelete = (id, stat) => {
-        setOpen(true)
-        let status = "deleted";
-        if (stat === "pending") {
-            status = "rejected";
-        }
-        if (stat === "deleted") {
-            axios.delete(API_URL + 'delete_user', {
-                params: {
-                    id: id
-                }
-            }).then((response) => {
-                if (response.data) {
-                    set_user_data(user_data.filter(row => row.ID !== id));
-                    setOpen(false)
-                }
-                else {
-                    console.log(response.data);
-                    setOpen(false)
-                }
-            }).catch((err) => {
-                console.log(err);
-                setOpen(false)
-            })
-        }
-        else {
+    const handleFilterChange = (event) => {
+        setFilter(event.target.value);
+        setCurrentPage(1);
+    };
 
+    const handleDelete = (id, stat) => {
+        if (stat === 'deleted') {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    setOpen(true);
+                    axios.delete(API_URL + 'delete_user', {
+                        params: {
+                            id: id
+                        }
+                    }).then((response) => {
+                        if (response.data) {
+                            set_user_data(user_data.map(row => row.ID === id ? { ...row, permanentlyDeleted: true } : row));
+                            setOpen(false);
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "User has been deleted.",
+                                icon: "success"
+                            });
+                        } else {
+                            console.log(response.data);
+                            setOpen(false);
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        setOpen(false);
+                    });
+                }
+            });
+        } else {
+            setOpen(true);
+            let status = "deleted";
+            if (stat === "pending") {
+                status = "rejected";
+            }
             axios.put(API_URL + 'update_user_status',
                 { status: status, id: id }).then((response) => {
                     if (response.data) {
@@ -53,22 +78,20 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                             }
                             return row;
                         }));
-                        setOpen(false)
-                    }
-                    else {
+                        setOpen(false);
+                    } else {
                         console.log(response.data);
-                        setOpen(false)
+                        setOpen(false);
                     }
                 }).catch((err) => {
                     console.log(err);
-                    setOpen(false)
-                })
+                    setOpen(false);
+                });
         }
-
     };
 
     const handleActiveInactive = (id, stat) => {
-        setOpen(true)
+        setOpen(true);
         let status = "active";
         if (stat === "active") {
             status = "inactive";
@@ -82,22 +105,24 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                         }
                         return row;
                     }));
-                    setOpen(false)
+                    setOpen(false);
                 }
                 else {
                     console.log(response.data);
-                    setOpen(false)
+                    setOpen(false);
                 }
             }).catch((err) => {
                 console.log(err);
-                setOpen(false)
-            })
+                setOpen(false);
+            });
     };
 
     const filteredData = user_data.filter(row =>
-        row.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        row.Email.toLowerCase().includes(searchTerm.toLowerCase())
+        (row.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            row.Email.toLowerCase().includes(searchTerm.toLowerCase())) &&
+        (filter === 'all' ? !row.permanentlyDeleted : (filter === 'deleted' && row.AccountStatus === 'deleted'))
     );
+
     function toTitleCase(str) {
         return str.replace(
             /\w\S*/g,
@@ -110,6 +135,49 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
     const currentEntries = filteredData.slice(indexOfFirstEntry, indexOfLastEntry);
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
+
+    const handleOpenModal = () => {
+        setIsModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setIsModalOpen(false);
+        setConfirmInput('');
+        setError('');
+    };
+
+    const handleConfirmChange = (event) => {
+        setConfirmInput(event.target.value);
+        setError('');
+    };
+
+    const handleClearAllData = () => {
+        if (confirmInput === 'confirm') {
+            handleCloseModal();
+            // Logic for clearing data goes here
+            console.log('Data cleared');
+        } else {
+            setError('Please type "confirm" to clear all deleted data.');
+        }
+    };
+
+    const exportToCSV = () => {
+        // Select columns to export
+        const columnsToExport = ['Name', 'Email', 'Role', 'AccountStatus'];
+
+        // Generate CSV content
+        const csvContent = "data:text/csv;charset=utf-8," +
+            columnsToExport.join(",") + "\n" +
+            currentEntries.map(row => columnsToExport.map(col => row[col]).join(",")).join("\n");
+
+        const encodedUri = encodeURI(csvContent);
+        const link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "export.csv");
+        document.body.appendChild(link);
+
+        link.click();
+    };
 
     return (
         <>
@@ -128,6 +196,10 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                         onChange={handleSearch}
                         className="search-input"
                     />
+                    <select value={filter} onChange={handleFilterChange} className="filter-dropdown">
+                        <option value="all">All</option>
+                        <option value="deleted">Show Deleted</option>
+                    </select>
                 </div>
                 <div className="table-container">
                     <table className="responsive-table">
@@ -143,18 +215,30 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                         <tbody>
                             {currentEntries.map((row, index) => (
                                 <tr key={row.ID}>
-                                    <td>{row.Name}</td>
-                                    <td>{row.Email}</td>
-                                    <td>{row.Role}</td>
-                                    <td style={{ color: row.AccountStatus === 'active' ? 'green' : 'red' }}>{toTitleCase(row.AccountStatus)}</td>
-                                    <td>
-                                        <div className='table-action-buttons'>
-                                            <button className='table-action-button-accept' onClick={() => { handleActiveInactive(row.ID, row.AccountStatus) }}>
-                                                {row.AccountStatus === 'inactive' ? 'Activate': row.AccountStatus === 'pending' ? 'Activate': row.AccountStatus === 'rejected' ? 'Activate' : row.AccountStatus === 'deleted' ? 'Reinstate' : 'InActivate'}</button>
-                                            <button className='table-action-button-cancel' onClick={() => { handleDelete(row.ID, row.AccountStatus) }}>
-                                                {row.AccountStatus === 'deleted' ? 'Delete Permanently' : row.AccountStatus === 'pending' ? 'Reject' : 'Delete'}</button>
-                                        </div>
-                                    </td>
+                                    {row.permanentlyDeleted ? (
+                                        <>
+                                            <td>{row.Name}</td>
+                                            <td>{row.Email}</td>
+                                            <td>{row.Role}</td>
+                                            <td style={{ color: row.AccountStatus === 'active' ? 'green' : 'red' }}>{toTitleCase(row.AccountStatus)}</td>
+                                            <td style={{ textAlign: 'center' }}>Deleted User</td>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <td>{row.Name}</td>
+                                            <td>{row.Email}</td>
+                                            <td>{row.Role}</td>
+                                            <td style={{ color: row.AccountStatus === 'active' ? 'green' : 'red' }}>{toTitleCase(row.AccountStatus)}</td>
+                                            <td>
+                                                <div className='table-action-buttons'>
+                                                    <button className='table-action-button-accept' onClick={() => { handleActiveInactive(row.ID, row.AccountStatus) }}>
+                                                        {row.AccountStatus === 'inactive' ? 'Activate' : row.AccountStatus === 'pending' ? 'Activate' : row.AccountStatus === 'rejected' ? 'Activate' : row.AccountStatus === 'deleted' ? 'Reinstate' : 'InActivate'}</button>
+                                                    <button className='table-action-button-cancel' onClick={() => { handleDelete(row.ID, row.AccountStatus) }}>
+                                                        {row.AccountStatus === 'deleted' ? 'Delete Permanently' : row.AccountStatus === 'pending' ? 'Reject' : 'Delete'}</button>
+                                                </div>
+                                            </td>
+                                        </>
+                                    )}
                                 </tr>
                             ))}
                         </tbody>
@@ -173,7 +257,39 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                         </button>
                     </div>
                 )}
+
+                <div className='clear-export-buttons'>
+                    <button className='clear-all-data-button' onClick={handleOpenModal}>
+                        Clear All Data
+                    </button>
+
+                    <button className='export-to-csv-button' onClick={exportToCSV}>
+                        Export To CSV
+                    </button>
+                </div>
             </div>
+
+            {/* Modal */}
+            {isModalOpen && (
+                <div className="modal-overlay">
+                    <div className="modal">
+                        <h2>Clear All Data</h2>
+                        <p>Would you like to clear all deleted data? Please type ‘confirm’ to remove all deleted data.</p>
+                        <input
+                            type="text"
+                            value={confirmInput}
+                            onChange={handleConfirmChange}
+                            placeholder="Type 'confirm' here"
+                            className="modal-input"
+                        />
+                        {error && <p className="modal-error">{error}</p>}
+                        <div className="modal-buttons">
+                            <button className="modal-button-cancel" onClick={handleCloseModal}>Cancel</button>
+                            <button className="modal-button-confirm" onClick={handleClearAllData}>Confirm</button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </>
     );
 };
