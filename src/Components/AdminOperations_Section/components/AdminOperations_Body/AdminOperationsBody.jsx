@@ -28,7 +28,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
     };
 
     const handleDelete = (id, stat) => {
-        if (stat === 'deleted') {
+        if (stat !== 'pending') {
             Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
@@ -65,10 +65,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
             });
         } else {
             setOpen(true);
-            let status = "deleted";
-            if (stat === "pending") {
-                status = "rejected";
-            }
+            let status = "rejected";
             axios.put(API_URL + 'update_user_status',
                 { status: status, id: id }).then((response) => {
                     if (response.data) {
@@ -255,9 +252,9 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                                             <td>
                                                 <div className='table-action-buttons'>
                                                     <button className='table-action-button-accept' onClick={() => { handleActiveInactive(row.ID, row.AccountStatus) }}>
-                                                        {row.AccountStatus === 'inactive' ? 'Activate' : row.AccountStatus === 'pending' ? 'Activate' : row.AccountStatus === 'rejected' ? 'Activate' : row.AccountStatus === 'deleted' ? 'Reinstate' : 'InActivate'}</button>
+                                                        {row.AccountStatus === 'inactive' ? 'Activate' : row.AccountStatus === 'pending' ? 'Activate' : row.AccountStatus === 'rejected' ? 'Activate' : row.AccountStatus === 'deleted' ? 'Reinstate' : 'DeActivate'}</button>
                                                     <button className='table-action-button-cancel' onClick={() => { handleDelete(row.ID, row.AccountStatus) }}>
-                                                        {row.AccountStatus === 'deleted' ? 'Delete Permanently' : row.AccountStatus === 'pending' ? 'Reject' : 'Delete'}</button>
+                                                        {row.AccountStatus === 'pending' ? 'Reject' : 'Delete'}</button>
                                                 </div>
                                             </td>
                                         </>
