@@ -155,7 +155,30 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
         if (confirmInput === 'confirm') {
             handleCloseModal();
             // Logic for clearing data goes here
-            console.log('Data cleared');
+            if((user_data.filter(row => row.AccountStatus === 'deleted')).length === 0){
+                alert("No Delete Account Present!")
+                return
+            }
+            setOpen(true);
+            axios.delete(API_URL + 'delete_users').then((response) => {
+                if (response.data) {
+                    set_user_data(user_data.filter(row => row.AccountStatus !== 'deleted'));
+                    setOpen(false);
+                    Swal.fire({
+                        title: "Deleted!",
+                        text: "Users have been deleted",
+                        icon: "success"
+                    });
+                } else {
+                    console.log(response.data);
+                    setOpen(false);
+                }
+            }).catch((err) => {
+                console.log(err);
+                setOpen(false);
+            });
+            
+            
         } else {
             setError('Please type "confirm" to clear all deleted data.');
         }
@@ -163,7 +186,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
 
     const exportToCSV = () => {
         // Select columns to export
-        const columnsToExport = ['Name', 'Email', 'Role', 'AccountStatus'];
+        const columnsToExport = ['Name', 'Email', 'Role', 'Status'];
 
         // Generate CSV content
         const csvContent = "data:text/csv;charset=utf-8," +
