@@ -117,7 +117,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
     const filteredData = user_data.filter(row =>
         (row.Name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             row.Email.toLowerCase().includes(searchTerm.toLowerCase())) &&
-        (filter === 'all' ? !row.permanentlyDeleted : (filter === 'deleted' && row.AccountStatus === 'deleted'))
+        (filter === 'all' ? !row.permanentlyDeleted : (filter === 'inactive' && row.AccountStatus === 'inactive'))
     );
 
     function toTitleCase(str) {
@@ -218,7 +218,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                     />
                     <select value={filter} onChange={handleFilterChange} className="filter-dropdown">
                         <option value="all">All</option>
-                        <option value="deleted">Show Deleted</option>
+                        <option value="inactive">Inactive</option>
                     </select>
                 </div>
                 <div className="table-container">
@@ -278,7 +278,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                     </div>
                 )}
 
-                <div className='clear-export-buttons'>
+                {/* <div className='clear-export-buttons'>
                     <button className='clear-all-data-button' onClick={handleOpenModal}>
                         Clear All Data
                     </button>
@@ -286,7 +286,7 @@ const AdminOperationsBody = ({ user_data, set_user_data }) => {
                     <button className='export-to-csv-button' onClick={exportToCSV}>
                         Export To CSV
                     </button>
-                </div>
+                </div> */}
             </div>
 
             {/* Modal */}
