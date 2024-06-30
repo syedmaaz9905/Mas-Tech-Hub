@@ -6,14 +6,14 @@ import { SiDavinciresolve } from "react-icons/si";
 
 const Tab3TruckOperations = () => {
 
-    const [formData, setFormData] = useState({
-        truckLocation: '',
-        boothLocation: '',
-        request: '',
-        notes: '',
-        assignedDriver: '',
-        priority: '',
-    });
+    // const [formData, setFormData] = useState({
+    //     truckLocation: '',
+    //     boothLocation: '',
+    //     request: '',
+    //     notes: '',
+    //     assignedDriver: '',
+    //     priority: '',
+    // });
 
     const [operations, setOperations] = useState(() => {
         const savedOperations = localStorage.getItem('operations');
@@ -25,44 +25,44 @@ const Tab3TruckOperations = () => {
         return savedRequestNumber ? parseInt(savedRequestNumber) : 1;
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData({
-            ...formData,
-            [name]: value,
-        });
-    };
+    // const handleChange = (e) => {
+    //     const { name, value } = e.target;
+    //     setFormData({
+    //         ...formData,
+    //         [name]: value,
+    //     });
+    // };
 
-    const addOperation = () => {
-        const newOperation = {
-            requestNumber: requestNumber,
-            truckLocation: formData.truckLocation,
-            boothLocation: formData.boothLocation,
-            request: formData.request,
-            notes: formData.notes,
-            assignedDriver: 'N/A',
-            requestTimeStamp: new Date().toLocaleString(),
-            requestTimeElapsed: 0,
-            priority: formData.priority,
-            resolved: false,
-        };
+    // const addOperation = () => {
+    //     const newOperation = {
+    //         requestNumber: requestNumber,
+    //         truckLocation: formData.truckLocation,
+    //         boothLocation: formData.boothLocation,
+    //         request: formData.request,
+    //         notes: formData.notes,
+    //         assignedDriver: 'N/A',
+    //         requestTimeStamp: new Date().toLocaleString(),
+    //         requestTimeElapsed: 0,
+    //         priority: formData.priority,
+    //         resolved: false,
+    //     };
 
-        const updatedOperations = [...operations, newOperation];
-        setOperations(updatedOperations);
-        localStorage.setItem('operations', JSON.stringify(updatedOperations));
+    //     const updatedOperations = [...operations, newOperation];
+    //     setOperations(updatedOperations);
+    //     localStorage.setItem('operations', JSON.stringify(updatedOperations));
 
-        setRequestNumber(requestNumber + 1);
-        localStorage.setItem('requestNumber', requestNumber + 1);
+    //     setRequestNumber(requestNumber + 1);
+    //     localStorage.setItem('requestNumber', requestNumber + 1);
 
-        setFormData({
-            truckLocation: '',
-            boothLocation: '',
-            request: '',
-            notes: '',
-            assignedDriver: '',
-            priority: '',
-        });
-    };
+    //     setFormData({
+    //         truckLocation: '',
+    //         boothLocation: '',
+    //         request: '',
+    //         notes: '',
+    //         assignedDriver: '',
+    //         priority: '',
+    //     });
+    // };
 
     useEffect(() => {
         const interval = setInterval(() => {
@@ -147,7 +147,7 @@ const Tab3TruckOperations = () => {
 
     return (
         <div className="tabMainContainer">
-            <div className="form-container">
+            {/* <div className="form-container">
                 <input
                     type="text"
                     name="truckLocation"
@@ -200,12 +200,12 @@ const Tab3TruckOperations = () => {
                     <option value="Low">Low</option>
                     <option value="High">High</option>
                 </select>
-            </div>
+            </div> */}
 
             <div className='btn-truck-operations-main'>
-                <button className='btn-truck-operations' onClick={addOperation}>
+                {/* <button className='btn-truck-operations' onClick={addOperation}>
                     Add Operation
-                </button>
+                </button> */}
                 <button className='btn-truck-operations' onClick={exportToCSV}>
                     Export to CSV
                 </button>
