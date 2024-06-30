@@ -39,7 +39,7 @@ const Tab2TruckOperations = () => {
             </div>
 
             {modalOpen && (
-                <div className='modal'>
+                <div className='modal-truck'>
                     <div className='modal-content'>
                         <span className='close' onClick={() => setModalOpen(false)}>&times;</span>
                         <h2>Add Driver</h2>
