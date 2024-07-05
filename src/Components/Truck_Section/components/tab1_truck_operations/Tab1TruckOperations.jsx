@@ -2,8 +2,11 @@ import React, { useState, useEffect } from 'react';
 import './tab1TruckOperations.css';
 import { MdDeleteForever } from "react-icons/md";
 import { SiDavinciresolve } from "react-icons/si";
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const Tab1TruckOperations = ({user_details}) => {
+let API_URL = 'https://backend.srv533347.hstgr.cloud/'
+const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
     const [formData, setFormData] = useState({
         truckLocation: '',
         boothLocation: '',
@@ -12,6 +15,22 @@ const Tab1TruckOperations = ({user_details}) => {
         assignedDriver: '',
         priority: '',
     });
+    const [drivers, setDrivers] = useState([]);
+
+    useEffect(() => {
+        set_backdrop(true);
+        axios.get(API_URL + 'get_truck_drivers', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            // console.log(response.data);
+            set_backdrop(false);
+            setDrivers(response.data);
+        })
+            .catch(err => { set_backdrop(false); console.warn(err) });
+    }, []);
+
 
     const [operations, setOperations] = useState(() => {
         const savedOperations = localStorage.getItem('operations');
@@ -34,16 +53,21 @@ const Tab1TruckOperations = ({user_details}) => {
     const addOperation = () => {
         const newOperation = {
             requestNumber: requestNumber,
-            truckLocation: formData.truckLocation,
-            boothLocation: formData.boothLocation,
-            request: formData.request,
-            notes: formData.notes,
+            formData: {
+                truckLocation: formData.truckLocation,
+                boothLocation: formData.boothLocation,
+                request: formData.request,
+                notes: formData.notes,
+                assignedDriver: formData.assignedDriver,
+                priority: formData.priority,
+            },
             assignedDriver: 'N/A',
             requestTimeStamp: new Date().toLocaleString(),
             requestTimeElapsed: 0,
-            priority: formData.priority,
             resolved: false,
         };
+
+        // console.log('FORMMMMMMMMMMMDAATAAAAAAAAAAAAAAA', formData)
 
         const updatedOperations = [...operations, newOperation];
         setOperations(updatedOperations);
@@ -182,10 +206,11 @@ const Tab1TruckOperations = ({user_details}) => {
                     value={formData.assignedDriver}
                     onChange={handleChange}
                     className="input"
-                    disabled
                 >
-                    <option value="" disabled>Assigned Driver</option>
-                    <option value="option1" disabled>N/A</option>
+                    {!formData.assignedDriver && <option value="" disabled hidden>Assigned Driver</option>}
+                    {drivers.map((driver, index) => (
+                        <option key={index} value={driver.DriverID}>{driver.DriverName}</option>
+                    ))}
                 </select>
                 <select
                     name="priority"
@@ -193,9 +218,9 @@ const Tab1TruckOperations = ({user_details}) => {
                     onChange={handleChange}
                     className="input"
                 >
-                    <option value="" disabled>Priority</option>
-                    <option value="Low">Low</option>
-                    <option value="High">High</option>
+                    {!formData.priority && <option value="" disabled hidden>Priority</option>}
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
                 </select>
             </div>
 
@@ -231,16 +256,16 @@ const Tab1TruckOperations = ({user_details}) => {
                         {operations.map((operation) => (
                             <tr key={operation.requestNumber} className={operation.resolved ? 'resolved' : ''}>
                                 <td>{operation.requestNumber}</td>
-                                <td>{operation.truckLocation}</td>
-                                <td>{operation.boothLocation}</td>
-                                <td>{operation.request}</td>
-                                <td>{operation.notes}</td>
-                                <td>{operation.assignedDriver}</td>
+                                <td>{operation.formData.truckLocation}</td>
+                                <td>{operation.formData.boothLocation}</td>
+                                <td>{operation.formData.request}</td>
+                                <td>{operation.formData.notes}</td>
+                                <td>{operation.formData.assignedDriver}</td>
                                 <td>{operation.requestTimeStamp}</td>
                                 <td>{operation.requestTimeElapsed}</td>
                                 <td>0:00</td>
                                 <td>0:00</td>
-                                <td>{operation.priority}</td>
+                                <td>{operation.formData.priority}</td>
                                 <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation.requestNumber)} /></td>
                                 <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation.requestNumber)} /></td>
                             </tr>

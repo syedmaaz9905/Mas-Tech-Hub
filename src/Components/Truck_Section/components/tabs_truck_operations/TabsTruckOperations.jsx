@@ -41,7 +41,7 @@ const TabsTruckOperations = ({user_details}) => {
                         className={`tab ${activeTab === 'Driver Options' ? 'active' : ''}`}
                         onClick={() => handleTabClick('Driver Options')}
                     >
-                        Driver Options
+                        Completed Operations
                     </button>
                 </div>
                 <div className="tab-content">

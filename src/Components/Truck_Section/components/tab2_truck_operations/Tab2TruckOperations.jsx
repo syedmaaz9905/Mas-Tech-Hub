@@ -12,6 +12,7 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
 
     useEffect(() => {
         set_backdrop(true);
+        // console.log(user_details)
         axios.get(API_URL + 'get_truck_drivers', {
             headers: {
                 'Content-Type': 'application/json'
@@ -161,7 +162,7 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                 <th>Booth Location</th>
                                 <th>Truck Location</th>
                                 <th>Status</th>
-                                <th>Delete</th>
+                                {user_details.Role !=="volunteer" && <th>Delete</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -172,9 +173,9 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                     <td>{driver.BoothLocation || 'N/A'}</td>
                                     <td>{driver.TruckLocation || 'N/A'}</td>
                                     <td>{driver.DriverStatus || 'N/A'}</td>
-                                    <td>
+                                    {user_details.Role !=="volunteer" && <td>
                                         <MdDeleteForever className='deleteIconTable' onClick={() => handleDeleteDriver(driver)} />
-                                    </td>
+                                    </td>}
                                 </tr>
                             ))}
                         </tbody>

@@ -43,6 +43,9 @@
   outline: none;
   box-shadow: 0 0 5px var(--PrimaryColor);
 }
+.tabMainContainer .form-container select {
+  cursor: pointer;
+}
 .tabMainContainer .btn-truck-operations-main {
   margin-top: 2rem;
   display: flex;

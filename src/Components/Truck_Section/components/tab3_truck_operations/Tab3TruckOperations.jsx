@@ -227,7 +227,7 @@ const Tab3TruckOperations = ({user_details}) => {
                             <th>ReAssigned Time Elapsed (s)</th>
                             <th>Priority</th>
                             <th>Delete</th>
-                            <th>Resolve</th>
+                            {/* <th>Resolve</th> */}
                         </tr>
                     </thead>
                     <tbody>
