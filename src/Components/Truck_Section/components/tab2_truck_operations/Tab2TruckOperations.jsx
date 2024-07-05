@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './tab2TruckOperations.css';
 import { MdDeleteForever } from 'react-icons/md';
 import axios from 'axios';
+import Swal from 'sweetalert2';
 
 let API_URL = 'https://backend.srv533347.hstgr.cloud/';
 const Tab2TruckOperations = ({user_details, set_backdrop}) => {
@@ -33,8 +34,9 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                 accountID: user_details.ID
             }).then((response) => {
                 if (response.status === 200) {
+                    const resp = response.data
                     set_backdrop(false);
-                    const updatedDrivers = [...drivers, { DriverName: driverName }];
+                    const updatedDrivers = [...drivers, resp];
                     setDrivers(updatedDrivers);
                     setDriverName('');
                     setModalOpen(false);
@@ -50,10 +52,76 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
         }
     };
 
-    const handleDeleteDriver = (index) => {
-        const updatedDrivers = drivers.filter((_, i) => i !== index);
-        setDrivers(updatedDrivers);
-        localStorage.setItem('drivers', JSON.stringify(updatedDrivers));
+    const handleDeleteDriver = (driver) => {
+
+        
+        if (driver.DriverStatus==="deleted") {
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    set_backdrop(true);
+                    axios.delete(API_URL + 'delete_driver', {
+                        params: {
+                            id: driver.DriverID,
+                            status: driver.DriverStatus
+                        }
+                    }).then((response) => {
+                        if (response.data) {
+                            setDrivers(drivers.filter(row => row.DriverID !== driver.DriverID));
+                            set_backdrop(false);
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "User has been deleted.",
+                                icon: "success"
+                            });
+                        } else {
+                            console.log(response.data);
+                            set_backdrop(false);
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        set_backdrop(false);
+                    });
+                }
+            });
+        }
+        else{
+            set_backdrop(true);
+            axios.delete(API_URL + 'delete_driver', {
+                params: {
+                    id: driver.DriverID,
+                    status: driver.DriverStatus
+                }
+            }).then((response) => {
+                if (response.data) {
+                    setDrivers(drivers.map(row => {
+                        if (row.DriverID === driver.DriverID) {
+                            row.DriverStatus = "deleted";
+                        }
+                        return row;
+                    }));
+                    set_backdrop(false);
+                    
+                } else {
+                    console.log(response.data);
+                    set_backdrop(false);
+                }
+            }).catch((err) => {
+                console.log(err);
+                set_backdrop(false);
+            });
+
+        }
+        // const updatedDrivers = drivers.filter((_, i) => i !== index);
+        // setDrivers(updatedDrivers);
+        // localStorage.setItem('drivers', JSON.stringify(updatedDrivers));
     };
 
     return (
@@ -92,7 +160,7 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                 <th>Request Number</th>
                                 <th>Booth Location</th>
                                 <th>Truck Location</th>
-                                <th>Request</th>
+                                <th>Status</th>
                                 <th>Delete</th>
                             </tr>
                         </thead>
@@ -103,9 +171,9 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                     <td>{driver.RequestNumber || 'N/A'}</td>
                                     <td>{driver.BoothLocation || 'N/A'}</td>
                                     <td>{driver.TruckLocation || 'N/A'}</td>
-                                    <td>{driver.Request || 'N/A'}</td>
+                                    <td>{driver.DriverStatus || 'N/A'}</td>
                                     <td>
-                                        <MdDeleteForever className='deleteIconTable' onClick={() => handleDeleteDriver(index)} />
+                                        <MdDeleteForever className='deleteIconTable' onClick={() => handleDeleteDriver(driver)} />
                                     </td>
                                 </tr>
                             ))}
