@@ -13,7 +13,7 @@ const Body = ({ activeItem, user_details, set_token }) => {
         <div className='mainContent'>
             <Top set_token={set_token} user_details={user_details} />
             {activeItem === 'home' && <Home />}
-            {activeItem === 'truck' && <Truck />}
+            {activeItem === 'truck' && <Truck user_details={user_details} />}
             {activeItem === 'vendor' && <Vendor />}
             {activeItem === 'csvdata' && <Csvdata />}
             {activeItem === 'profile' && <Profile />}

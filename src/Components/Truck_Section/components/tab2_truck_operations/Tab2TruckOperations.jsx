@@ -1,26 +1,52 @@
 import React, { useState, useEffect } from 'react';
 import './tab2TruckOperations.css';
 import { MdDeleteForever } from 'react-icons/md';
+import axios from 'axios';
 
-const Tab2TruckOperations = () => {
+let API_URL = 'https://backend.srv533347.hstgr.cloud/';
+const Tab2TruckOperations = ({user_details, set_backdrop}) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [driverName, setDriverName] = useState('');
     const [drivers, setDrivers] = useState([]);
 
     useEffect(() => {
-        const savedDrivers = localStorage.getItem('drivers');
-        if (savedDrivers) {
-            setDrivers(JSON.parse(savedDrivers));
-        }
+        set_backdrop(true);
+        axios.get(API_URL + 'get_truck_drivers', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            // console.log(response.data);
+            set_backdrop(false);
+            setDrivers(response.data);
+        })
+            .catch(err => {set_backdrop(false); console.warn(err)});
     }, []);
 
+
     const handleAddDriver = () => {
+        
         if (driverName.trim()) {
-            const updatedDrivers = [...drivers, { name: driverName }];
-            setDrivers(updatedDrivers);
-            localStorage.setItem('drivers', JSON.stringify(updatedDrivers));
-            setDriverName('');
-            setModalOpen(false);
+            set_backdrop(true);
+            axios.post(API_URL + 'add_driver', {
+                driverName: driverName,
+                accountID: user_details.ID
+            }).then((response) => {
+                if (response.status === 200) {
+                    set_backdrop(false);
+                    const updatedDrivers = [...drivers, { DriverName: driverName }];
+                    setDrivers(updatedDrivers);
+                    setDriverName('');
+                    setModalOpen(false);
+                }
+            }).catch((error) => {
+                console.log("Error", error);
+                set_backdrop(false);
+                setDriverName('');
+                setModalOpen(false);
+                alert("Error");
+            })
+            
         }
     };
 
@@ -73,11 +99,11 @@ const Tab2TruckOperations = () => {
                         <tbody>
                             {drivers.map((driver, index) => (
                                 <tr key={index}>
-                                    <td>{driver.name}</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
-                                    <td>N/A</td>
+                                    <td>{driver.DriverName}</td>
+                                    <td>{driver.RequestNumber || 'N/A'}</td>
+                                    <td>{driver.BoothLocation || 'N/A'}</td>
+                                    <td>{driver.TruckLocation || 'N/A'}</td>
+                                    <td>{driver.Request || 'N/A'}</td>
                                     <td>
                                         <MdDeleteForever className='deleteIconTable' onClick={() => handleDeleteDriver(index)} />
                                     </td>

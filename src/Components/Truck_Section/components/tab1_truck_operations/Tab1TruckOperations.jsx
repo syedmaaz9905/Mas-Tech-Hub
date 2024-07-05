@@ -3,7 +3,7 @@ import './tab1TruckOperations.css';
 import { MdDeleteForever } from "react-icons/md";
 import { SiDavinciresolve } from "react-icons/si";
 
-const Tab1TruckOperations = () => {
+const Tab1TruckOperations = ({user_details}) => {
     const [formData, setFormData] = useState({
         truckLocation: '',
         boothLocation: '',

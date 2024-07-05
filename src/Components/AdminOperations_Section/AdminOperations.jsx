@@ -24,7 +24,7 @@ const AdminOperations = ({ user_details }) => {
             setOpen(false)
             setUserData(response.data)
         })
-            .catch(err => console.warn(err));
+            .catch(err => {setOpen(false); console.warn(err)});
     }, []);
 
     return (
