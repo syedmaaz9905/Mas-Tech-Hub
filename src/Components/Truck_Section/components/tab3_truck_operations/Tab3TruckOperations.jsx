@@ -3,8 +3,11 @@ import './tab3TruckOperations.css';
 
 import { MdDeleteForever } from "react-icons/md";
 import { SiDavinciresolve } from "react-icons/si";
+import axios from 'axios';
+import Swal from 'sweetalert2';
 
-const Tab3TruckOperations = ({user_details}) => {
+let API_URL = 'https://backend.srv533347.hstgr.cloud/'
+const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
 
     // const [formData, setFormData] = useState({
     //     truckLocation: '',
@@ -15,15 +18,71 @@ const Tab3TruckOperations = ({user_details}) => {
     //     priority: '',
     // });
 
-    const [operations, setOperations] = useState(() => {
-        const savedOperations = localStorage.getItem('operations');
-        return savedOperations ? JSON.parse(savedOperations) : [];
-    });
+    const [operations, setOperations] = useState([]);
 
-    const [requestNumber, setRequestNumber] = useState(() => {
-        const savedRequestNumber = localStorage.getItem('requestNumber');
-        return savedRequestNumber ? parseInt(savedRequestNumber) : 1;
-    });
+
+    const elapsedTimeCalculator = (select_time) => {
+        const currentTime = new Date();
+        const selectTimeDate = new Date(select_time);
+        const diffInMillis = Math.abs(currentTime - selectTimeDate);
+
+        return timeFormatter(diffInMillis)
+    };
+
+    const elapsedTimeFind = (select_time) => {
+        const currentTime = new Date();
+        const selectTimeDate = new Date(select_time);
+        const diffInMillis = Math.abs(currentTime - selectTimeDate);
+        return diffInMillis
+    }
+
+    function timeFormatter(diffInMillis) {
+        const hours = Math.floor(diffInMillis / 3600000);
+        const minutes = Math.floor((diffInMillis % 3600000) / 60000);
+        const seconds = Math.floor((diffInMillis % 60000) / 1000);
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        return [formattedHours, formattedMinutes, formattedSeconds]
+    }
+
+    function counterTimer() {
+
+        setOperations(prevOperations => prevOperations.map(operation => ({
+            ...operation,
+            RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+            DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
+            RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+            DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
+        })));
+    }
+
+
+    useEffect(() => {
+        set_backdrop(true);
+        axios.get(API_URL + 'get_resolved_truck_oeprations', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            // console.log(response.data);
+            set_backdrop(false);
+            const resp = response.data;
+            setOperations(resp?.truck_operations?.map(dat => {
+                return {
+                    ...dat,
+                    RequestTimeElapsed: elapsedTimeCalculator(dat.TimeStarted),
+                    DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
+                    RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
+                    DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+
+                };
+            }));
+            // setDrivers(resp.drivers);
+            setInterval(counterTimer, 1000);
+        })
+            .catch(err => { set_backdrop(false); console.warn(err) });
+    }, []);
 
     // const handleChange = (e) => {
     //     const { name, value } = e.target;
@@ -64,22 +123,6 @@ const Tab3TruckOperations = ({user_details}) => {
     //     });
     // };
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            setOperations((prevOperations) =>
-                prevOperations.map((operation) => ({
-                    ...operation,
-                    requestTimeElapsed: operation.requestTimeElapsed + 1,
-                }))
-            );
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    useEffect(() => {
-        localStorage.setItem('operations', JSON.stringify(operations));
-    }, [operations]);
 
     const deleteOperation = (requestNumber) => {
         const updatedOperations = operations.filter((operation) => operation.requestNumber !== requestNumber);
@@ -232,20 +275,20 @@ const Tab3TruckOperations = ({user_details}) => {
                     </thead>
                     <tbody>
                         {operations.map((operation) => (
-                            <tr key={operation.requestNumber} className={operation.resolved ? 'resolved' : ''}>
-                                <td>{operation.requestNumber}</td>
-                                <td>{operation.truckLocation}</td>
-                                <td>{operation.boothLocation}</td>
-                                <td>{operation.request}</td>
-                                <td>{operation.notes}</td>
-                                <td>{operation.assignedDriver}</td>
-                                <td>{operation.requestTimeStamp}</td>
-                                <td>{operation.requestTimeElapsed}</td>
-                                <td>0:00</td>
-                                <td>0:00</td>
-                                <td>{operation.priority}</td>
-                                <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation.requestNumber)} /></td>
-                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation.requestNumber)} /></td>
+                            <tr key={operation.ID} className={operation.resolved ? 'resolved' : ''}>
+                                <td>{operation.RequestNumber}</td>
+                                <td>{operation.TruckLocation}</td>
+                                <td>{operation.BoothLocation}</td>
+                                <td>{operation.Request}</td>
+                                <td>{operation.Notes}</td>
+                                <td>{operation.DriverName}</td>
+                                <td>{operation.TimeStarted}</td>
+                                <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
+                                <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
+                                {/* <td>0:00</td> */}
+                                <td>{operation.Priority}</td>
+                                <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation)} /></td>
+                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation)} /></td>
                             </tr>
                         ))}
                     </tbody>

@@ -4,7 +4,6 @@ import { MdDeleteForever } from "react-icons/md";
 import { SiDavinciresolve } from "react-icons/si";
 import axios from 'axios';
 import Swal from 'sweetalert2';
-import moment from 'moment';
 
 let API_URL = 'https://backend.srv533347.hstgr.cloud/'
 const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
@@ -18,13 +17,13 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
     });
     const [drivers, setDrivers] = useState([]);
     const [operations, setOperations] = useState([]);
-    
+
 
     const elapsedTimeCalculator = (select_time) => {
         const currentTime = new Date();
         const selectTimeDate = new Date(select_time);
         const diffInMillis = Math.abs(currentTime - selectTimeDate);
-        
+
         return timeFormatter(diffInMillis)
     };
 
@@ -35,7 +34,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return diffInMillis
     }
 
-    function timeFormatter(diffInMillis){
+    function timeFormatter(diffInMillis) {
         const hours = Math.floor(diffInMillis / 3600000);
         const minutes = Math.floor((diffInMillis % 3600000) / 60000);
         const seconds = Math.floor((diffInMillis % 60000) / 1000);
@@ -45,15 +44,15 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return [formattedHours, formattedMinutes, formattedSeconds]
     }
 
-    function counterTimer(){
-        
-            setOperations(prevOperations => prevOperations.map(operation => ({
-              ...operation,
-              RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
-              DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
-              RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
-              DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
-            })));
+    function counterTimer() {
+
+        setOperations(prevOperations => prevOperations.map(operation => ({
+            ...operation,
+            RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+            DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
+            RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+            DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
+        })));
     }
 
     const handleChange = (e) => {
@@ -64,7 +63,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         });
     };
 
-    
+
     useEffect(() => {
         set_backdrop(true);
         axios.get(API_URL + 'get_truck_operation', {
@@ -154,24 +153,114 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return () => clearInterval(interval);
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem('operations', JSON.stringify(operations));
-    }, [operations]);
 
-    const deleteOperation = (requestNumber) => {
-        const updatedOperations = operations.filter((operation) => operation.requestNumber !== requestNumber);
-        setOperations(updatedOperations);
-        localStorage.setItem('operations', JSON.stringify(updatedOperations));
+    const deleteOperation = (operation) => {
+        const id = operation.ID;
+        const status = operation.OperationStatus;
+        if (status === 'deleted') {
+            if(user_details.Role==="volunteer"){
+                return alert("Only admins can delete permenantly");
+            }
+            Swal.fire({
+                title: "Are you sure?",
+                text: "You won't be able to revert this!",
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!"
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    set_backdrop(true);
+                    axios.delete(API_URL + 'delete_truck_operation', {
+                        params: {
+                            id: id,
+                            status: status,
+                        }
+                    }).then((response) => {
+                        if (response.data) {
+                            setOperations(operations.map(row => row.ID === id ? { ...row, permanentlyDeleted: true } : row));
+                            set_backdrop(false);
+                            Swal.fire({
+                                title: "Deleted!",
+                                text: "Operation has been deleted.",
+                                icon: "success"
+                            });
+                        } else {
+                            console.log(response.data);
+                            set_backdrop(false);
+                        }
+                    }).catch((err) => {
+                        console.log(err);
+                        set_backdrop(false);
+                    });
+                }
+            });
+
+        }
+        else {
+            set_backdrop(true);
+            axios.delete(API_URL + 'delete_truck_operation', {
+                params: {
+                    id: id,
+                    status: status,
+                }
+            }).then((response) => {
+                if (response.data) {
+                    setOperations(operations.map(row => {
+                        if (row.ID === id) {
+                            return {
+                                ...row,
+                                OperationStatus: "deleted"
+                            };
+                        }
+                        return row;
+                    }));
+                    set_backdrop(false);
+
+                } else {
+                    console.log(response.data);
+                    set_backdrop(false);
+                }
+            }).catch((err) => {
+                console.log(err);
+                set_backdrop(false);
+            });
+        }
+
     };
 
-    const resolveOperation = (requestNumber) => {
-        const updatedOperations = operations.map((operation) =>
-            operation.requestNumber === requestNumber
-                ? { ...operation, resolved: !operation.resolved }
-                : operation
-        );
-        setOperations(updatedOperations);
-        localStorage.setItem('operations', JSON.stringify(updatedOperations));
+    const resolveOperation = (operation) => {
+        const status = operation.OperationStatus==='active' ? 'resolved': 'active'
+        const id = operation.ID;
+        set_backdrop(true);
+        axios.put(API_URL + 'update_truck_operation',
+            { status: status, id: id }).then((response) => {
+                if (response.data) {
+                    if(status==='resolved'){
+                        console.log(operations)
+                        setOperations(operations.filter(row => row.ID !== id));
+                    }
+                    else{
+                        setOperations(operations.map(row => {
+                            if (row.ID === id) {
+                                return {
+                                    ...row,
+                                    OperationStatus: 'active'
+                                };
+                            }
+                            return row;
+                        }));
+                    }
+                    set_backdrop(false);
+                } else {
+                    console.log(response.data);
+                    set_backdrop(false);
+                }
+            }).catch((err) => {
+                console.log(err);
+                set_backdrop(false);
+            });
     };
 
     const exportToCSV = () => {
@@ -321,8 +410,8 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                                 <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
                                 {/* <td>0:00</td> */}
                                 <td>{operation.Priority}</td>
-                                <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation.requestNumber)} /></td>
-                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation.requestNumber)} /></td>
+                                <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation)} /></td>
+                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation)} /></td>
                             </tr>
                         ))}
                     </tbody>
