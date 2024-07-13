@@ -4,6 +4,7 @@ import { MdDeleteForever } from "react-icons/md";
 import { SiDavinciresolve } from "react-icons/si";
 import axios from 'axios';
 import Swal from 'sweetalert2';
+import moment from 'moment';
 
 let API_URL = 'https://backend.srv533347.hstgr.cloud/'
 const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
@@ -16,31 +17,44 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         priority: '',
     });
     const [drivers, setDrivers] = useState([]);
+    const [operations, setOperations] = useState([]);
+    
 
-    useEffect(() => {
-        set_backdrop(true);
-        axios.get(API_URL + 'get_truck_drivers', {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        }).then((response) => {
-            // console.log(response.data);
-            set_backdrop(false);
-            setDrivers(response.data);
-        })
-            .catch(err => { set_backdrop(false); console.warn(err) });
-    }, []);
+    const elapsedTimeCalculator = (select_time) => {
+        const currentTime = new Date();
+        const selectTimeDate = new Date(select_time);
+        const diffInMillis = Math.abs(currentTime - selectTimeDate);
+        
+        return timeFormatter(diffInMillis)
+    };
 
+    const elapsedTimeFind = (select_time) => {
+        const currentTime = new Date();
+        const selectTimeDate = new Date(select_time);
+        const diffInMillis = Math.abs(currentTime - selectTimeDate);
+        return diffInMillis
+    }
 
-    const [operations, setOperations] = useState(() => {
-        const savedOperations = localStorage.getItem('operations');
-        return savedOperations ? JSON.parse(savedOperations) : [];
-    });
+    function timeFormatter(diffInMillis){
+        const hours = Math.floor(diffInMillis / 3600000);
+        const minutes = Math.floor((diffInMillis % 3600000) / 60000);
+        const seconds = Math.floor((diffInMillis % 60000) / 1000);
+        const formattedHours = String(hours).padStart(2, '0');
+        const formattedMinutes = String(minutes).padStart(2, '0');
+        const formattedSeconds = String(seconds).padStart(2, '0');
+        return [formattedHours, formattedMinutes, formattedSeconds]
+    }
 
-    const [requestNumber, setRequestNumber] = useState(() => {
-        const savedRequestNumber = localStorage.getItem('requestNumber');
-        return savedRequestNumber ? parseInt(savedRequestNumber) : 1;
-    });
+    function counterTimer(){
+        
+            setOperations(prevOperations => prevOperations.map(operation => ({
+              ...operation,
+              RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+              DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
+              RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+              DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
+            })));
+    }
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -50,40 +64,81 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         });
     };
 
+    
+    useEffect(() => {
+        set_backdrop(true);
+        axios.get(API_URL + 'get_truck_operation', {
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        }).then((response) => {
+            // console.log(response.data);
+            set_backdrop(false);
+            const resp = response.data;
+            setOperations(resp?.truck_operations?.map(dat => {
+                return {
+                    ...dat,
+                    RequestTimeElapsed: elapsedTimeCalculator(dat.TimeStarted),
+                    DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
+                    RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
+                    DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+
+                };
+            }));
+            setDrivers(resp.drivers);
+            setInterval(counterTimer, 1000);
+        })
+            .catch(err => { set_backdrop(false); console.warn(err) });
+    }, []);
+
+
     const addOperation = () => {
-        const newOperation = {
-            requestNumber: requestNumber,
-            formData: {
-                truckLocation: formData.truckLocation,
-                boothLocation: formData.boothLocation,
-                request: formData.request,
-                notes: formData.notes,
-                assignedDriver: formData.assignedDriver,
-                priority: formData.priority,
-            },
-            assignedDriver: 'N/A',
-            requestTimeStamp: new Date().toLocaleString(),
-            requestTimeElapsed: 0,
-            resolved: false,
+        const operationData = {
+            truckLocation: formData.truckLocation,
+            boothLocation: formData.boothLocation,
+            request: formData.request,
+            notes: formData.notes,
+            assignedDriver: formData.assignedDriver,
+            priority: formData.priority,
         };
+        set_backdrop(true);
+        axios.post(API_URL + 'add_truck_operation',
+            operationData
+        ).then((response) => {
+            if (response.status === 200) {
+                console.log("done")
+                setFormData({
+                    truckLocation: '',
+                    boothLocation: '',
+                    request: '',
+                    notes: '',
+                    assignedDriver: '',
+                    priority: '',
+                });
+                set_backdrop(false);
+            }
+        }).catch((error) => {
+            console.log("Error", error);
+            set_backdrop(false);
+        })
 
         // console.log('FORMMMMMMMMMMMDAATAAAAAAAAAAAAAAA', formData)
 
-        const updatedOperations = [...operations, newOperation];
-        setOperations(updatedOperations);
-        localStorage.setItem('operations', JSON.stringify(updatedOperations));
+        // const updatedOperations = [...operations, newOperation];
+        // setOperations(updatedOperations);
+        // localStorage.setItem('operations', JSON.stringify(updatedOperations));
 
-        setRequestNumber(requestNumber + 1);
-        localStorage.setItem('requestNumber', requestNumber + 1);
+        // setRequestNumber(requestNumber + 1);
+        // localStorage.setItem('requestNumber', requestNumber + 1);
 
-        setFormData({
-            truckLocation: '',
-            boothLocation: '',
-            request: '',
-            notes: '',
-            assignedDriver: '',
-            priority: '',
-        });
+        // setFormData({
+        //     truckLocation: '',
+        //     boothLocation: '',
+        //     request: '',
+        //     notes: '',
+        //     assignedDriver: '',
+        //     priority: '',
+        // });
     };
 
     useEffect(() => {
@@ -246,7 +301,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                             <th>Request TimeStamp</th>
                             <th>Request Time Elapsed (s)</th>
                             <th>Driver Assigned Time Elapsed (s)</th>
-                            <th>ReAssigned Time Elapsed (s)</th>
+                            {/* <th>ReAssigned Time Elapsed (s)</th> */}
                             <th>Priority</th>
                             <th>Delete</th>
                             <th>Resolve</th>
@@ -254,18 +309,18 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     </thead>
                     <tbody>
                         {operations.map((operation) => (
-                            <tr key={operation.requestNumber} className={operation.resolved ? 'resolved' : ''}>
-                                <td>{operation.requestNumber}</td>
-                                <td>{operation.formData.truckLocation}</td>
-                                <td>{operation.formData.boothLocation}</td>
-                                <td>{operation.formData.request}</td>
-                                <td>{operation.formData.notes}</td>
-                                <td>{operation.formData.assignedDriver}</td>
-                                <td>{operation.requestTimeStamp}</td>
-                                <td>{operation.requestTimeElapsed}</td>
-                                <td>0:00</td>
-                                <td>0:00</td>
-                                <td>{operation.formData.priority}</td>
+                            <tr key={operation.ID} className={operation.resolved ? 'resolved' : ''}>
+                                <td>{operation.RequestNumber}</td>
+                                <td>{operation.TruckLocation}</td>
+                                <td>{operation.BoothLocation}</td>
+                                <td>{operation.Request}</td>
+                                <td>{operation.Notes}</td>
+                                <td>{operation.DriverName}</td>
+                                <td>{operation.TimeStarted}</td>
+                                <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
+                                <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
+                                {/* <td>0:00</td> */}
+                                <td>{operation.Priority}</td>
                                 <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation.requestNumber)} /></td>
                                 <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation.requestNumber)} /></td>
                             </tr>
