@@ -3,12 +3,14 @@
     --PrimaryColor: hsl(94, 59%, 35%);
     --HoverColor: #bdf094;
     --paleGreen: hsl(96, 75%, 89%);
+    --littleGreen: hsl(95, 55%, 94%);
     --whiteColor: hsl(0, 0%, 100%);
     --blackColor: hsl(0, 0%, 18%);
     --textColor: hsl(240, 1%, 48%);
     --bgColor: hsl(220, 10%, 94%);
     --greyText: rgb(190, 190, 190);
     --inputColor: hsl(330, 12%, 97%);
+    --littleRed: hsl(0, 100%, 93%);
 
     /* Font & Typography */
     --biggestFontSize: 2.5em;
@@ -106,14 +108,6 @@
                 font-weight: 500;
             }
 
-            tr.resolved {
-                background-color: var(--paleGreen);
-            }
-
-            tr:not(.resolved) {
-                background-color: initial;
-            }
-
             .deleteIconTable {
                 width: 22px;
                 height: 22px;
@@ -138,6 +132,14 @@
                 }
             }
 
+        }
+
+        #tableTab1TruckOperations tr.deleted {
+            background-color: var(--littleRed);
+        }
+
+        #tableTab1TruckOperations tr:not(.deleted) {
+            background-color: initial;
         }
     }
 }

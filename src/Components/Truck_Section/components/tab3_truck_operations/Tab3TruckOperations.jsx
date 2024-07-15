@@ -255,7 +255,7 @@ const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
             </div>
 
             <div className="table-container">
-                <table>
+                <table id='tableTab3TruckOperations'>
                     <thead>
                         <tr>
                             <th>Request Number</th>
@@ -266,8 +266,8 @@ const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
                             <th>Assigned Driver</th>
                             <th>Request TimeStamp</th>
                             <th>Request Time Elapsed (s)</th>
-                            <th>Driver Assigned Time Elapsed (s)</th>
-                            <th>ReAssigned Time Elapsed (s)</th>
+                            {/* <th>Driver Assigned Time Elapsed (s)</th> */}
+                            {/* <th>ReAssigned Time Elapsed (s)</th> */}
                             <th>Priority</th>
                             <th>Delete</th>
                             {/* <th>Resolve</th> */}
@@ -275,7 +275,8 @@ const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
                     </thead>
                     <tbody>
                         {operations.map((operation) => (
-                            <tr key={operation.ID} className={operation.resolved ? 'resolved' : ''}>
+                            // <tr key={operation.ID} className={operation.resolved ? 'resolved' : 'resolved'}>
+                            <tr key={operation.ID} className={operation.OperationStatus == 'resolved' ? 'resolvedTruck3' : 'resolvedTruck3'}>
                                 <td>{operation.RequestNumber}</td>
                                 <td>{operation.TruckLocation}</td>
                                 <td>{operation.BoothLocation}</td>
@@ -284,11 +285,11 @@ const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
                                 <td>{operation.DriverName}</td>
                                 <td>{operation.TimeStarted}</td>
                                 <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
-                                <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
+                                {/* <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td> */}
                                 {/* <td>0:00</td> */}
                                 <td>{operation.Priority}</td>
                                 <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation)} /></td>
-                                <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation)} /></td>
+                                {/* <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation)} /></td> */}
                             </tr>
                         ))}
                     </tbody>

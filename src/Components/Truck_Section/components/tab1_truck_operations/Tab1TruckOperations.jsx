@@ -63,7 +63,6 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         });
     };
 
-
     useEffect(() => {
         set_backdrop(true);
         axios.get(API_URL + 'get_truck_operation', {
@@ -86,6 +85,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
             }));
             setDrivers(resp.drivers);
             setInterval(counterTimer, 1000);
+            console.log('OPERATIONSSSSSSSSSSSSSSSSSSS', operations)
         })
             .catch(err => { set_backdrop(false); console.warn(err) });
     }, []);
@@ -153,12 +153,11 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return () => clearInterval(interval);
     }, []);
 
-
     const deleteOperation = (operation) => {
         const id = operation.ID;
         const status = operation.OperationStatus;
         if (status === 'deleted') {
-            if(user_details.Role==="volunteer"){
+            if (user_details.Role === "volunteer") {
                 return alert("Only admins can delete permenantly");
             }
             Swal.fire({
@@ -231,17 +230,17 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
     };
 
     const resolveOperation = (operation) => {
-        const status = operation.OperationStatus==='active' ? 'resolved': 'active'
+        const status = operation.OperationStatus === 'active' ? 'resolved' : 'active'
         const id = operation.ID;
         set_backdrop(true);
         axios.put(API_URL + 'update_truck_operation',
             { status: status, id: id }).then((response) => {
                 if (response.data) {
-                    if(status==='resolved'){
+                    if (status === 'resolved') {
                         console.log(operations)
                         setOperations(operations.filter(row => row.ID !== id));
                     }
-                    else{
+                    else {
                         setOperations(operations.map(row => {
                             if (row.ID === id) {
                                 return {
@@ -378,7 +377,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
             </div>
 
             <div className="table-container">
-                <table>
+                <table id='tableTab1TruckOperations'>
                     <thead>
                         <tr>
                             <th>Request Number</th>
@@ -398,7 +397,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     </thead>
                     <tbody>
                         {operations.map((operation) => (
-                            <tr key={operation.ID} className={operation.resolved ? 'resolved' : ''}>
+                            <tr key={operation.ID} className={operation.OperationStatus == 'deleted' ? 'deleted' : ''}>
                                 <td>{operation.RequestNumber}</td>
                                 <td>{operation.TruckLocation}</td>
                                 <td>{operation.BoothLocation}</td>
