@@ -106,6 +106,28 @@
             td {
                 font-size: 13px;
                 font-weight: 500;
+
+                select {
+                    padding: 5px;
+                    border-radius: 4px;
+                    border: none;
+                    background-color: initial;
+                    font-size: var(--normalFontSize);
+                    color: var(--blackColor);
+                    cursor: pointer;
+
+                    &:hover {
+                        border-color: var(--paleGreen);
+                        border: 1px solid var(--greyText);
+                        background-color: var(--inputColor);
+                    }
+
+                    // &:focus {
+                    //     border-color: var(--PrimaryColor);
+                    //     outline: none;
+                    //     box-shadow: 0 0 5px var(--PrimaryColor);
+                    // }
+                }
             }
 
             .deleteIconTable {

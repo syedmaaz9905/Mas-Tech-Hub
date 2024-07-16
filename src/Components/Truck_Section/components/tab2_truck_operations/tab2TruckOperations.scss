@@ -210,4 +210,18 @@
         }
     }
 
+    .reinstateDriverButton {
+        background: none;
+        outline: none;
+        border: 1px solid #000;
+        padding: 2px 6px;
+        cursor: pointer;
+        border-radius: 6px;
+        transition: all 0.3s ease-in-out;
+    }
+
+    .reinstateDriverButton:hover {
+        background: #bdf094;
+        border: 1px solid #bdf094;
+    }
 }

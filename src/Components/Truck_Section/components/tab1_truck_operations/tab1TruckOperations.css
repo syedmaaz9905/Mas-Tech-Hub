@@ -94,6 +94,20 @@
   font-size: 13px;
   font-weight: 500;
 }
+.tabMainContainer .table-container table td select {
+  padding: 5px;
+  border-radius: 4px;
+  border: none;
+  background-color: initial;
+  font-size: var(--normalFontSize);
+  color: var(--blackColor);
+  cursor: pointer;
+}
+.tabMainContainer .table-container table td select:hover {
+  border-color: var(--paleGreen);
+  border: 1px solid var(--greyText);
+  background-color: var(--inputColor);
+}
 .tabMainContainer .table-container table .deleteIconTable {
   width: 22px;
   height: 22px;

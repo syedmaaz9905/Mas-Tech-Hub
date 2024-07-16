@@ -5,29 +5,25 @@ import axios from 'axios';
 import Swal from 'sweetalert2';
 
 let API_URL = 'https://backend.srv533347.hstgr.cloud/';
-const Tab2TruckOperations = ({user_details, set_backdrop}) => {
+const Tab2TruckOperations = ({ user_details, set_backdrop }) => {
     const [modalOpen, setModalOpen] = useState(false);
     const [driverName, setDriverName] = useState('');
     const [drivers, setDrivers] = useState([]);
 
     useEffect(() => {
         set_backdrop(true);
-        // console.log(user_details)
         axios.get(API_URL + 'get_truck_drivers', {
             headers: {
                 'Content-Type': 'application/json'
             }
         }).then((response) => {
-            // console.log(response.data);
             set_backdrop(false);
             setDrivers(response.data);
         })
-            .catch(err => {set_backdrop(false); console.warn(err)});
+            .catch(err => { set_backdrop(false); console.warn(err); });
     }, []);
 
-
     const handleAddDriver = () => {
-        
         if (driverName.trim()) {
             set_backdrop(true);
             axios.post(API_URL + 'add_driver', {
@@ -35,7 +31,7 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                 accountID: user_details.ID
             }).then((response) => {
                 if (response.status === 200) {
-                    const resp = response.data
+                    const resp = response.data;
                     set_backdrop(false);
                     const updatedDrivers = [...drivers, resp];
                     setDrivers(updatedDrivers);
@@ -48,15 +44,12 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                 setDriverName('');
                 setModalOpen(false);
                 alert("Error");
-            })
-            
+            });
         }
     };
 
     const handleDeleteDriver = (driver) => {
-
-        
-        if (driver.DriverStatus==="deleted") {
+        if (driver.DriverStatus === "deleted") {
             Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",
@@ -92,8 +85,7 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                     });
                 }
             });
-        }
-        else{
+        } else {
             set_backdrop(true);
             axios.delete(API_URL + 'delete_driver', {
                 params: {
@@ -109,7 +101,6 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                         return row;
                     }));
                     set_backdrop(false);
-                    
                 } else {
                     console.log(response.data);
                     set_backdrop(false);
@@ -118,11 +109,30 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                 console.log(err);
                 set_backdrop(false);
             });
-
         }
-        // const updatedDrivers = drivers.filter((_, i) => i !== index);
-        // setDrivers(updatedDrivers);
-        // localStorage.setItem('drivers', JSON.stringify(updatedDrivers));
+    };
+
+    const handleReinstateDriver = (driver) => {
+        set_backdrop(true);
+        axios.post(API_URL + 'reinstate_driver', {
+            id: driver.DriverID
+        }).then((response) => {
+            if (response.data) {
+                setDrivers(drivers.map(row => {
+                    if (row.DriverID === driver.DriverID) {
+                        row.DriverStatus = "active";
+                    }
+                    return row;
+                }));
+                set_backdrop(false);
+            } else {
+                console.log(response.data);
+                set_backdrop(false);
+            }
+        }).catch((err) => {
+            console.log(err);
+            set_backdrop(false);
+        });
     };
 
     return (
@@ -162,7 +172,8 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                 <th>Booth Location</th>
                                 <th>Truck Location</th>
                                 <th>Status</th>
-                                {user_details.Role !=="volunteer" && <th>Delete</th>}
+                                {user_details.Role !== "volunteer" && <th>Delete</th>}
+                                {user_details.Role !== "volunteer" && <th>Reinstate</th>}
                             </tr>
                         </thead>
                         <tbody>
@@ -173,8 +184,13 @@ const Tab2TruckOperations = ({user_details, set_backdrop}) => {
                                     <td>{driver.BoothLocation || 'N/A'}</td>
                                     <td>{driver.TruckLocation || 'N/A'}</td>
                                     <td>{driver.DriverStatus || 'N/A'}</td>
-                                    {user_details.Role !=="volunteer" && <td>
+                                    {user_details.Role !== "volunteer" && <td>
                                         <MdDeleteForever className='deleteIconTable' onClick={() => handleDeleteDriver(driver)} />
+                                    </td>}
+                                    {user_details.Role !== "volunteer" && <td>
+                                        {driver.DriverStatus === "deleted" && (
+                                            <button className='reinstateDriverButton' onClick={() => handleReinstateDriver(driver)}>Reinstate</button>
+                                        )}
                                     </td>}
                                 </tr>
                             ))}

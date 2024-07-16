@@ -153,6 +153,13 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return () => clearInterval(interval);
     }, []);
 
+    const handleDriverChange = (e, operationID) => {
+        const newDriverID = e.target.value;
+        setOperations(operations.map(operation => 
+            operation.ID === operationID ? { ...operation, DriverID: newDriverID, DriverName: drivers.find(driver => driver.DriverID === newDriverID).DriverName } : operation
+        ));
+    };
+
     const deleteOperation = (operation) => {
         const id = operation.ID;
         const status = operation.OperationStatus;
@@ -403,7 +410,19 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                                 <td>{operation.BoothLocation}</td>
                                 <td>{operation.Request}</td>
                                 <td>{operation.Notes}</td>
-                                <td>{operation.DriverName}</td>
+                                <td>
+                                    <select
+                                        name={`assignedDriver-${operation.ID}`}
+                                        value={operation.DriverID}
+                                        onChange={(e) => handleDriverChange(e, operation.ID)}
+                                        className="input"
+                                    >
+                                        {!operation.DriverID && <option value="" disabled hidden>Assigned Driver</option>}
+                                        {drivers.map((driver, driverIndex) => (
+                                            <option key={driverIndex} value={driver.DriverID}>{driver.DriverName}</option>
+                                        ))}
+                                    </select>
+                                </td>
                                 <td>{operation.TimeStarted}</td>
                                 <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
                                 <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
