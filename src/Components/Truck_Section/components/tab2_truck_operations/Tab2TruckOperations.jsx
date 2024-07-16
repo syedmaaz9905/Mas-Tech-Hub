@@ -19,6 +19,7 @@ const Tab2TruckOperations = ({ user_details, set_backdrop }) => {
         }).then((response) => {
             set_backdrop(false);
             setDrivers(response.data);
+            console.log(response.data);
         })
             .catch(err => { set_backdrop(false); console.warn(err); });
     }, []);
@@ -49,6 +50,9 @@ const Tab2TruckOperations = ({ user_details, set_backdrop }) => {
     };
 
     const handleDeleteDriver = (driver) => {
+        if (driver.DriverStatus === "placed"){
+            return alert("Driver is placed already, can't delete");
+        }
         if (driver.DriverStatus === "deleted") {
             Swal.fire({
                 title: "Are you sure?",
@@ -114,13 +118,13 @@ const Tab2TruckOperations = ({ user_details, set_backdrop }) => {
 
     const handleReinstateDriver = (driver) => {
         set_backdrop(true);
-        axios.post(API_URL + 'reinstate_driver', {
+        axios.put(API_URL + 'reinstate_driver', {
             id: driver.DriverID
         }).then((response) => {
             if (response.data) {
                 setDrivers(drivers.map(row => {
                     if (row.DriverID === driver.DriverID) {
-                        row.DriverStatus = "active";
+                        row.DriverStatus = "available";
                     }
                     return row;
                 }));

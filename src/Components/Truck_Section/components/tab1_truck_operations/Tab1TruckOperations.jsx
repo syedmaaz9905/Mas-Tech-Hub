@@ -85,7 +85,6 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
             }));
             setDrivers(resp.drivers);
             setInterval(counterTimer, 1000);
-            console.log('OPERATIONSSSSSSSSSSSSSSSSSSS', operations)
         })
             .catch(err => { set_backdrop(false); console.warn(err) });
     }, []);
@@ -105,7 +104,17 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
             operationData
         ).then((response) => {
             if (response.status === 200) {
-                console.log("done")
+                const dat = response.data;
+                setOperations((operation) => [...operation, ...dat.operation?.map(dat => {
+                    return {
+                        ...dat,
+                        RequestTimeElapsed: elapsedTimeCalculator(dat.TimeStarted),
+                        DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
+                        RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
+                        DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+    
+                    };
+                })]);
                 setFormData({
                     truckLocation: '',
                     boothLocation: '',
@@ -163,6 +172,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
     const deleteOperation = (operation) => {
         const id = operation.ID;
         const status = operation.OperationStatus;
+        const driver_id = operation.DriverID
         if (status === 'deleted') {
             if (user_details.Role === "volunteer") {
                 return alert("Only admins can delete permenantly");
@@ -182,10 +192,11 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                         params: {
                             id: id,
                             status: status,
+                            driver_id: driver_id,
                         }
                     }).then((response) => {
                         if (response.data) {
-                            setOperations(operations.map(row => row.ID === id ? { ...row, permanentlyDeleted: true } : row));
+                            setOperations(operations.filter(row => row.ID !== id ));
                             set_backdrop(false);
                             Swal.fire({
                                 title: "Deleted!",
@@ -210,6 +221,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                 params: {
                     id: id,
                     status: status,
+                    driver_id: driver_id,
                 }
             }).then((response) => {
                 if (response.data) {
@@ -239,9 +251,10 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
     const resolveOperation = (operation) => {
         const status = operation.OperationStatus === 'active' ? 'resolved' : 'active'
         const id = operation.ID;
+        const driver_id = operation.DriverID
         set_backdrop(true);
         axios.put(API_URL + 'update_truck_operation',
-            { status: status, id: id }).then((response) => {
+            { status: status, id: id, assignedDriver: driver_id }).then((response) => {
                 if (response.data) {
                     if (status === 'resolved') {
                         console.log(operations)
