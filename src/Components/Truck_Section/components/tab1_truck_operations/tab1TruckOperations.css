@@ -11,6 +11,7 @@
   --greyText: rgb(190, 190, 190);
   --inputColor: hsl(330, 12%, 97%);
   --littleRed: hsl(0, 100%, 93%);
+  --littleYellow: hsl(66, 100%, 91%);
   /* Font & Typography */
   --biggestFontSize: 2.5em;
   --h1FontSize: 1.5em;
@@ -132,6 +133,12 @@
   background-color: var(--littleRed);
 }
 .tabMainContainer .table-container #tableTab1TruckOperations tr:not(.deleted) {
+  background-color: initial;
+}
+.tabMainContainer .table-container #tableTab1TruckOperations tr.na-selected {
+  background-color: var(--littleYellow);
+}
+.tabMainContainer .table-container #tableTab1TruckOperations tr:not(.na-selected) {
   background-color: initial;
 }
 

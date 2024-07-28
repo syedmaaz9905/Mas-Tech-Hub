@@ -112,7 +112,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                         DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
                         RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
                         DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
-    
+
                     };
                 })]);
                 setFormData({
@@ -164,8 +164,15 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
 
     const handleDriverChange = (e, operationID) => {
         const newDriverID = e.target.value;
-        setOperations(operations.map(operation => 
+        setOperations(operations.map(operation =>
             operation.ID === operationID ? { ...operation, DriverID: newDriverID, DriverName: drivers.find(driver => driver.DriverID === newDriverID).DriverName } : operation
+        ));
+    };
+
+    const handlePriorityChange = (e, operationID) => {
+        const newPriority = e.target.value;
+        setOperations(operations.map(operation =>
+            operation.ID === operationID ? { ...operation, Priority: newPriority } : operation
         ));
     };
 
@@ -196,7 +203,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                         }
                     }).then((response) => {
                         if (response.data) {
-                            setOperations(operations.filter(row => row.ID !== id ));
+                            setOperations(operations.filter(row => row.ID !== id));
                             set_backdrop(false);
                             Swal.fire({
                                 title: "Deleted!",
@@ -364,7 +371,9 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     placeholder="Notes"
                     className="input"
                 />
-                <select
+
+                {/* old code */}
+                {/* <select
                     name="assignedDriver"
                     value={formData.assignedDriver}
                     onChange={handleChange}
@@ -374,7 +383,20 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     {drivers.map((driver, index) => (
                         <option key={index} value={driver.DriverID}>{driver.DriverName}</option>
                     ))}
+                </select> */}
+                <select
+                    name="assignedDriver"
+                    value={formData.assignedDriver}
+                    onChange={handleChange}
+                    className="input"
+                >
+                    {!formData.assignedDriver && <option value="" disabled hidden>Assigned Driver</option>}
+                    <option value="NA">NA</option>
+                    {drivers.map((driver, index) => (
+                        <option key={index} value={driver.DriverID}>{driver.DriverName}</option>
+                    ))}
                 </select>
+
                 <select
                     name="priority"
                     value={formData.priority}
@@ -417,13 +439,14 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     </thead>
                     <tbody>
                         {operations.map((operation) => (
-                            <tr key={operation.ID} className={operation.OperationStatus == 'deleted' ? 'deleted' : ''}>
+                            <tr key={operation.ID} className={`${operation.OperationStatus === 'deleted' ? 'deleted' : ''} ${operation.DriverID === 'NA' ? 'na-selected' : ''}`}>
                                 <td>{operation.RequestNumber}</td>
                                 <td>{operation.TruckLocation}</td>
                                 <td>{operation.BoothLocation}</td>
                                 <td>{operation.Request}</td>
                                 <td>{operation.Notes}</td>
-                                <td>
+                                {/* old code */}
+                                {/* <td>
                                     <select
                                         name={`assignedDriver-${operation.ID}`}
                                         value={operation.DriverID}
@@ -435,12 +458,38 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                                             <option key={driverIndex} value={driver.DriverID}>{driver.DriverName}</option>
                                         ))}
                                     </select>
+                                </td> */}
+                                <td>
+                                    <select
+                                        name={`assignedDriver-${operation.ID}`}
+                                        value={operation.DriverID}
+                                        onChange={(e) => handleDriverChange(e, operation.ID)}
+                                        className="input"
+                                    >
+                                        {!operation.DriverID && <option value="" disabled hidden>Assigned Driver</option>}
+                                        <option value="NA">NA</option>
+                                        {drivers.map((driver, driverIndex) => (
+                                            <option key={driverIndex} value={driver.DriverID}>{driver.DriverName}</option>
+                                        ))}
+                                    </select>
                                 </td>
+
                                 <td>{operation.TimeStarted}</td>
                                 <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
                                 <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
                                 {/* <td>0:00</td> */}
-                                <td>{operation.Priority}</td>
+                                <td>
+                                    <select
+                                        name={`priority-${operation.ID}`}
+                                        value={operation.Priority}
+                                        onChange={(e) => handlePriorityChange(e, operation.ID)}
+                                        className="input"
+                                    >
+                                        <option value="low">Low</option>
+                                        <option value="high">High</option>
+                                    </select>
+                                </td>
+                                {/* <td>{operation.Priority}</td> */}
                                 <td><MdDeleteForever className='deleteIconTable' onClick={() => deleteOperation(operation)} /></td>
                                 <td><SiDavinciresolve className='resolveIconTable' onClick={() => resolveOperation(operation)} /></td>
                             </tr>
