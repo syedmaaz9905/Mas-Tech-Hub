@@ -24,4 +24,12 @@
   border-radius: 8px;
   background: #fff;
   margin-top: 3rem;
+}
+
+.profileBodyMain {
+  width: 100%;
+  padding: 1.5rem;
+  border-radius: 8px;
+  background: #fff;
+  margin-top: 1rem;
 }/*# sourceMappingURL=profile.css.map */
