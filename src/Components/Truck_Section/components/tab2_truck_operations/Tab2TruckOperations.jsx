@@ -50,10 +50,13 @@ const Tab2TruckOperations = ({ user_details, set_backdrop }) => {
     };
 
     const handleDeleteDriver = (driver) => {
-        if (driver.DriverStatus === "placed"){
+        if (driver.DriverStatus !== "available" && driver.DriverStatus !== "deleted"){
             return alert("Driver is placed already, can't delete");
         }
         if (driver.DriverStatus === "deleted") {
+            if(user_details.Role === "volunteer") {
+                return alert("Only admins can delete permenantly");
+            }
             Swal.fire({
                 title: "Are you sure?",
                 text: "You won't be able to revert this!",

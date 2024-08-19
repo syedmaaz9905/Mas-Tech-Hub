@@ -44,15 +44,76 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
         return [formattedHours, formattedMinutes, formattedSeconds]
     }
 
+    function addTimes(time1, time2) {
+        // Function to convert time string to total seconds
+        function toSeconds(time) {
+            const [hours, minutes, seconds] = time.split(':').map(Number);
+            return hours * 3600 + minutes * 60 + seconds;
+        }
+    
+        // Function to convert total seconds to time string
+        function toTimeString(totalSeconds) {
+            const hours = Math.floor(totalSeconds / 3600);
+            const minutes = Math.floor((totalSeconds % 3600) / 60);
+            const seconds = totalSeconds % 60;
+            return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+    
+        // Convert both times to total seconds
+        const totalSeconds1 = toSeconds(time1);
+        const totalSeconds2 = toSeconds(time2);
+    
+        // Add the total seconds together
+        const totalSeconds = totalSeconds1 + totalSeconds2;
+    
+        // Convert the total seconds back to hh:mm:ss format
+        return toTimeString(totalSeconds);
+    }
+
+    const timeFindReassigned = (time, spent) => {
+        var currentTime = elapsedTimeCalculator(time);
+        currentTime = `${currentTime[0]}:${currentTime[1]}:${currentTime[2]}`
+        return addTimes(spent, currentTime)
+    }
+
     function counterTimer() {
 
-        setOperations(prevOperations => prevOperations.map(operation => ({
-            ...operation,
-            RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
-            DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
-            RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
-            DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
-        })));
+        // setOperations(prevOperations => prevOperations.map(operation => (
+        //     {
+        //     ...operation,
+        //     RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+        //     DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
+        //     RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+        //     DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
+        // })));
+
+        setOperations(prevOperations => prevOperations.map(operation => {
+            if (operation.OperationStatus !== 'deleted') {
+                return {
+                    ...operation,
+                    RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+                    DriverTimeElapsedCounter: operation.DriverTimeElapsedCounter + 1000,
+                    RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+                    DriverTimeElapsed: timeFormatter(operation.DriverTimeElapsedCounter + 1000),
+                };
+            } else {
+                var time_curr = timeFormatter(operation.ReassignedTimeElapsedCounter + 1000);
+                time_curr = `${time_curr[0]}:${time_curr[1]}:${time_curr[2]}`
+                console.log(time_curr)
+                return {
+                    ...operation,
+                    // Optionally, keep the counters unchanged or handle differently
+                    RequestTimeElapsedCounter: operation.RequestTimeElapsedCounter + 1000,
+                    RequestTimeElapsed: timeFormatter(operation.RequestTimeElapsedCounter + 1000),
+                    ReassignedTimeElapsedCounter: operation.ReassignedTimeElapsedCounter + 1000,
+                    ReassignedTimeElapsed: addTimes(operation.TotalReassignedTime, time_curr),
+
+                };
+            }
+        }));
+        
+
+
     }
 
     const handleChange = (e) => {
@@ -74,15 +135,32 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
             set_backdrop(false);
             const resp = response.data;
             setOperations(resp?.truck_operations?.map(dat => {
-                return {
-                    ...dat,
-                    RequestTimeElapsed: elapsedTimeCalculator(dat.TimeStarted),
-                    DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
-                    RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
-                    DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+                if(dat.OperationStatus !== "deleted"){
+                    return {
+                        ...dat,
+                        RequestTimeElapsed: elapsedTimeCalculator(dat.ReassignedTime),
+                        DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
+                        ReassignedTimeElapsed: dat.TotalReassignedTime,
+                        RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),
+                        DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+                        ReassignedTimeElapsedCounter: elapsedTimeFind(dat.ReassignedTime)
+                    };
+                }
+                else{
+                    return {
+                        ...dat,
+                        RequestTimeElapsed: elapsedTimeCalculator(dat.TimeStarted),
+                        DriverTimeElapsed: elapsedTimeCalculator(dat.DriverTimeStarted),
+                        ReassignedTimeElapsed: timeFindReassigned(dat.ReassignedTime, dat.TotalReassignedTime), 
+                        RequestTimeElapsedCounter: elapsedTimeFind(dat.TimeStarted),  
+                        DriverTimeElapsedCounter: elapsedTimeFind(dat.DriverTimeStarted),
+                        ReassignedTimeElapsedCounter: elapsedTimeFind(dat.ReassignedTime),
 
-                };
+                    };
+                }
             }));
+           
+            
             setDrivers(resp.drivers);
             setInterval(counterTimer, 1000);
         })
@@ -391,7 +469,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                     className="input"
                 >
                     {!formData.assignedDriver && <option value="" disabled hidden>Assigned Driver</option>}
-                    <option value="NA">NA</option>
+                    {/* <option value="NA">NA</option> */}
                     {drivers.map((driver, index) => (
                         <option key={index} value={driver.DriverID}>{driver.DriverName}</option>
                     ))}
@@ -431,7 +509,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                             <th>Request TimeStamp</th>
                             <th>Request Time Elapsed (s)</th>
                             <th>Driver Assigned Time Elapsed (s)</th>
-                            {/* <th>ReAssigned Time Elapsed (s)</th> */}
+                            <th>ReAssigned Time Elapsed (s)</th>
                             <th>Priority</th>
                             <th>Delete</th>
                             <th>Resolve</th>
@@ -466,8 +544,8 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                                         onChange={(e) => handleDriverChange(e, operation.ID)}
                                         className="input"
                                     >
-                                        {!operation.DriverID && <option value="" disabled hidden>Assigned Driver</option>}
-                                        <option value="NA">NA</option>
+                                        {<option value={operation.DriverID} disabled hidden>{operation.DriverName}</option>}
+                                        {/* <option value="NA">NA</option> */}
                                         {drivers.map((driver, driverIndex) => (
                                             <option key={driverIndex} value={driver.DriverID}>{driver.DriverName}</option>
                                         ))}
@@ -477,7 +555,7 @@ const Tab1TruckOperations = ({ user_details, set_backdrop }) => {
                                 <td>{operation.TimeStarted}</td>
                                 <td>{`${operation.RequestTimeElapsed[0]}:${operation.RequestTimeElapsed[1]}:${operation.RequestTimeElapsed[2]}`}</td>
                                 <td>{`${operation.DriverTimeElapsed[0]}:${operation.DriverTimeElapsed[1]}:${operation.DriverTimeElapsed[2]}`}</td>
-                                {/* <td>0:00</td> */}
+                                <td>{operation.ReassignedTimeElapsed || `00:00:00`}</td>
                                 <td>
                                     <select
                                         name={`priority-${operation.ID}`}

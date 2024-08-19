@@ -60,7 +60,7 @@ const Tab3TruckOperations = ({ user_details, set_backdrop }) => {
 
     useEffect(() => {
         set_backdrop(true);
-        axios.get(API_URL + 'get_resolved_truck_oeprations', {
+        axios.get(API_URL + 'get_resolved_truck_operations', {
             headers: {
                 'Content-Type': 'application/json'
             }
